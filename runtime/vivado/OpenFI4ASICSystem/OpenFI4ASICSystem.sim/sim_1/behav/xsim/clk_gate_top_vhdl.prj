@@ -1,0 +1,11 @@
+# compile vhdl design source files
+vhdl2008 fault_injection  \
+"../../../../../Documents/OpenFLINT-FPGA/openflint-fpga/fault_injection/read_write_axi.vhd" \
+"../../../../../Documents/OpenFLINT-FPGA/openflint-fpga/fault_injection/clk_gate.vhd" \
+"../../../../../Documents/OpenFLINT-FPGA/openflint-fpga/fault_injection/clk_router.vhd" \
+
+vhdl xil_defaultlib  \
+"../../../../../Documents/OpenFLINT-FPGA/openflint-fpga/fault_injection/clk_gate_top.vhd" \
+
+# Do not sort compile order
+nosort

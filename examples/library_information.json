@@ -1,0 +1,22 @@
+{
+    "DFF_X1": {
+        "data_inputs": [
+            "D"
+        ],
+        "data_outputs": [
+            "Q",
+            "QN"
+        ],
+        "module_is_clocked": "True"
+    },
+    "DFF_X2": {
+        "data_inputs": [
+            "D"
+        ],
+        "data_outputs": [
+            "Q",
+            "QN"
+        ],
+        "module_is_clocked": "True"
+    }
+}

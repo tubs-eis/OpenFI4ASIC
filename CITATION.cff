@@ -1,0 +1,59 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: OpenFI4ASIC
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Jasper
+    family-names: Homann
+    email: jasper.homann@tu-braunschweig.de
+    affiliation: >-
+      Technische Universität Braunschweig, Abteilung
+      Technische Informatik
+    orcid: 'https://orcid.org/0009-0003-5294-3115'
+  - given-names: Eike
+    family-names: Trumann
+    orcid: 'https://orcid.org/0009-0005-9959-8771'
+    affiliation: >-
+      Technische Universität Braunschweig, Abteilung
+      Technische Informatik
+  - given-names: Lucian
+    family-names: Lohse
+    affiliation: >-
+      Technische Universität Braunschweig, Abteilung
+      Technische Informatik
+  - given-names: Moritz
+    family-names: Weißbrich
+    orcid: 'https://orcid.org/0000-0002-6647-5215'
+    affiliation: >-
+      Technische Universität Braunschweig, Abteilung
+      Technische Informatik
+  - given-names: Christian
+    family-names: Ewert
+    orcid: 'https://orcid.org/0009-0002-4820-4726'
+    affiliation: >-
+      Leibniz Universität Hannover, Institut für
+      Mikroelektronische Systeme
+  - given-names: Guillermo
+    family-names: Payá Vayá
+    affiliation: >-
+      Technische Universität Braunschweig, Abteilung
+      Technische Informatik
+    orcid: 'https://orcid.org/0000-0003-3503-8386'
+  - name: >-
+      Technische Universität Braunschweig, Abteilung
+      Technische Informatik
+    address: 'Mühlenpfordtstraße 23, 2. OG'
+    city: Braunschweig
+    country: DE
+    post-code: '38106'
+    website: 'https://www.tu-braunschweig.de/eis'
+repository-code: 'https://github.com/tubs-eis/OpenFI4ASIC'
+abstract: >-
+  Fault emulation tool and FPGA runtime for fault efficient
+  fault emulation of post-synthesis ASIC designs.
+license: MIT

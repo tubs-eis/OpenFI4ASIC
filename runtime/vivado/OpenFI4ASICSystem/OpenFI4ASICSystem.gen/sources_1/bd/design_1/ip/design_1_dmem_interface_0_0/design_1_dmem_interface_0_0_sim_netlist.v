@@ -1,8 +1,8 @@
 // Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
 // Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
-// Tool Version: Vivado v.2024.2.1 (lin64) Build 5266912 Sun Dec 15 09:03:31 MST 2024
-// Date        : Tue Apr  1 19:29:31 2025
+// Tool Version: Vivado v.2024.2 (lin64) Build 5239630 Fri Nov 08 22:34:34 MST 2024
+// Date        : Thu Jul 10 12:22:34 2025
 // Host        : laptop-homann-25.eis.tu-bs.de running 64-bit Ubuntu 24.04.2 LTS
 // Command     : write_verilog -force -mode funcsim
 //               /home/jhomann/Projects/OpenFLINT/repos/public/OpenFI4ASIC/runtime/vivado/OpenFI4ASICSystem/OpenFI4ASICSystem.gen/sources_1/bd/design_1/ip/design_1_dmem_interface_0_0/design_1_dmem_interface_0_0_sim_netlist.v
@@ -14,32 +14,79 @@
 `timescale 1 ps / 1 ps
 
 (* CHECK_LICENSE_TYPE = "design_1_dmem_interface_0_0,dmem_interface,{}" *) (* DowngradeIPIdentifiedWarnings = "yes" *) (* IP_DEFINITION_SOURCE = "module_ref" *) 
-(* X_CORE_INFO = "dmem_interface,Vivado 2024.2.1" *) 
+(* X_CORE_INFO = "dmem_interface,Vivado 2024.2" *) 
 (* NotValidForBitStream *)
 module design_1_dmem_interface_0_0
    (ren_i,
     wen_i,
     en_o,
+    web_i,
     web_o);
   input ren_i;
   input wen_i;
   output en_o;
+  input [3:0]web_i;
   output [3:0]web_o;
 
   wire en_o;
   wire ren_i;
+  wire [3:0]web_i;
+  wire [3:0]web_o;
   wire wen_i;
 
-  assign web_o[3] = wen_i;
-  assign web_o[2] = wen_i;
-  assign web_o[1] = wen_i;
-  assign web_o[0] = wen_i;
   LUT2 #(
     .INIT(4'hE)) 
     en_o_INST_0
        (.I0(ren_i),
         .I1(wen_i),
         .O(en_o));
+  design_1_dmem_interface_0_0_dmem_interface inst
+       (.web_i(web_i),
+        .web_o(web_o),
+        .wen_i(wen_i));
+endmodule
+
+(* ORIG_REF_NAME = "dmem_interface" *) 
+module design_1_dmem_interface_0_0_dmem_interface
+   (web_o,
+    web_i,
+    wen_i);
+  output [3:0]web_o;
+  input [3:0]web_i;
+  input wen_i;
+
+  wire [3:0]web_i;
+  wire [3:0]web_o;
+  wire wen_i;
+
+  (* SOFT_HLUTNM = "soft_lutpair0" *) 
+  LUT2 #(
+    .INIT(4'h8)) 
+    \web_o[0]_INST_0 
+       (.I0(web_i[0]),
+        .I1(wen_i),
+        .O(web_o[0]));
+  (* SOFT_HLUTNM = "soft_lutpair0" *) 
+  LUT2 #(
+    .INIT(4'h8)) 
+    \web_o[1]_INST_0 
+       (.I0(web_i[1]),
+        .I1(wen_i),
+        .O(web_o[1]));
+  (* SOFT_HLUTNM = "soft_lutpair1" *) 
+  LUT2 #(
+    .INIT(4'h8)) 
+    \web_o[2]_INST_0 
+       (.I0(web_i[2]),
+        .I1(wen_i),
+        .O(web_o[2]));
+  (* SOFT_HLUTNM = "soft_lutpair1" *) 
+  LUT2 #(
+    .INIT(4'h8)) 
+    \web_o[3]_INST_0 
+       (.I0(web_i[3]),
+        .I1(wen_i),
+        .O(web_o[3]));
 endmodule
 `ifndef GLBL
 `define GLBL

@@ -1,8 +1,8 @@
 //Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
 //Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
-//Tool Version: Vivado v.2024.2.1 (lin64) Build 5266912 Sun Dec 15 09:03:31 MST 2024
-//Date        : Tue Apr  1 19:28:10 2025
+//Tool Version: Vivado v.2024.2 (lin64) Build 5239630 Fri Nov 08 22:34:34 MST 2024
+//Date        : Mon Jul 14 15:45:22 2025
 //Host        : laptop-homann-25.eis.tu-bs.de running 64-bit Ubuntu 24.04.2 LTS
 //Command     : generate_target design_1.bd
 //Design      : design_1
@@ -10,7 +10,7 @@
 //--------------------------------------------------------------------------------
 `timescale 1 ps / 1 ps
 
-(* CORE_GENERATION_INFO = "design_1,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=design_1,x_ipVersion=1.00.a,x_ipLanguage=VERILOG,numBlks=33,numReposBlks=24,numNonXlnxBlks=0,numHierBlks=9,maxHierDepth=0,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=10,numPkgbdBlks=0,bdsource=USER,da_axi4_cnt=6,da_board_cnt=1,da_bram_cntlr_cnt=3,da_clkrst_cnt=18,da_ps7_cnt=1,synth_mode=Hierarchical}" *) (* HW_HANDOFF = "design_1.hwdef" *) 
+(* CORE_GENERATION_INFO = "design_1,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=design_1,x_ipVersion=1.00.a,x_ipLanguage=VERILOG,numBlks=39,numReposBlks=30,numNonXlnxBlks=0,numHierBlks=9,maxHierDepth=0,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=10,numPkgbdBlks=0,bdsource=USER,da_axi4_cnt=6,da_board_cnt=1,da_bram_cntlr_cnt=3,da_clkrst_cnt=18,da_ps7_cnt=1,synth_mode=Hierarchical}" *) (* HW_HANDOFF = "design_1.hwdef" *) 
 module design_1
    (DDR_addr,
     DDR_ba,
@@ -255,7 +255,9 @@ module design_1
   wire axi_interconnect_0_M06_AXI_WREADY;
   wire [3:0]axi_interconnect_0_M06_AXI_WSTRB;
   wire axi_interconnect_0_M06_AXI_WVALID;
+  wire clk_gate_top_0_clk_enabled_o;
   wire clk_gate_top_0_clk_o;
+  wire clk_gate_top_1_clk_enabled_o;
   wire clk_gate_top_1_clk_o;
   wire dmem_interface_0_en_o;
   wire [3:0]dmem_interface_0_web_o;
@@ -263,7 +265,15 @@ module design_1
   wire [31:0]dual_clock_bram_0_doutb;
   wire [31:0]dual_clock_bram_1_douta;
   wire [31:0]dual_clock_bram_1_doutb;
+  wire [31:0]eisv_core_wrapper_flt_0_dmem_addr_o;
+  wire [3:0]eisv_core_wrapper_flt_0_dmem_byte_enable_o;
+  wire eisv_core_wrapper_flt_0_dmem_ren_o;
+  wire [31:0]eisv_core_wrapper_flt_0_dmem_wdata_o;
+  wire eisv_core_wrapper_flt_0_dmem_wen_o;
+  wire [31:0]eisv_core_wrapper_flt_0_imem_addr_o;
+  wire eisv_core_wrapper_flt_0_imem_ren_o;
   wire [0:0]ilconstant_0_dout;
+  wire [0:0]ilconstant_1_dout;
   wire imem_interface_0_en_o;
   wire [3:0]imem_interface_0_web_o;
   wire processing_system7_0_FCLK_CLK0;
@@ -306,16 +316,19 @@ module design_1
   wire processing_system7_0_M_AXI_GP0_WREADY;
   wire [3:0]processing_system7_0_M_AXI_GP0_WSTRB;
   wire processing_system7_0_M_AXI_GP0_WVALID;
+  wire reset_top_0_active_ff_dbg;
+  wire reset_top_0_done_ff_dbg;
   wire reset_top_0_rst_o;
   wire [0:0]rst_ps7_0_100M_peripheral_aresetn;
-  wire [31:0]saa_flt_0_dmem_addr_o;
-  wire saa_flt_0_dmem_ren_o;
-  wire [31:0]saa_flt_0_dmem_wdata_o;
-  wire saa_flt_0_dmem_wen_o;
-  wire [31:0]saa_flt_0_imem_addr_o;
-  wire saa_flt_0_imem_ren_o;
+  wire scan_chain_top_0_active_ff_dbg;
+  wire scan_chain_top_0_done_ff_dbg;
   wire [2:0]scan_chain_top_0_scan_chain_o;
   wire [31:0]xlconstant_0_dout;
+  wire [0:0]xlslice_0_Dout;
+  wire [9:0]xlslice_1_Dout;
+  wire [9:0]xlslice_2_Dout;
+  wire [9:0]xlslice_3_Dout;
+  wire [9:0]xlslice_4_Dout;
 
   (* BMM_INFO_ADDRESS_SPACE = "byte  0x42000000 32 > design_1 axi_bram_ctrl_0_bram" *) 
   (* KEEP_HIERARCHY = "yes" *) 
@@ -655,6 +668,7 @@ module design_1
         .S_AXI_WREADY(axi_interconnect_0_M00_AXI_WREADY),
         .S_AXI_WSTRB(axi_interconnect_0_M00_AXI_WSTRB),
         .S_AXI_WVALID(axi_interconnect_0_M00_AXI_WVALID),
+        .clk_enabled_o(clk_gate_top_0_clk_enabled_o),
         .clk_o(clk_gate_top_0_clk_o));
   design_1_clk_gate_top_0_1 clk_gate_top_1
        (.S_AXI_ACLK(processing_system7_0_FCLK_CLK0),
@@ -678,15 +692,17 @@ module design_1
         .S_AXI_WREADY(axi_interconnect_0_M03_AXI_WREADY),
         .S_AXI_WSTRB(axi_interconnect_0_M03_AXI_WSTRB),
         .S_AXI_WVALID(axi_interconnect_0_M03_AXI_WVALID),
+        .clk_enabled_o(clk_gate_top_1_clk_enabled_o),
         .clk_o(clk_gate_top_1_clk_o));
   design_1_dmem_interface_0_0 dmem_interface_0
        (.en_o(dmem_interface_0_en_o),
-        .ren_i(saa_flt_0_dmem_ren_o),
+        .ren_i(eisv_core_wrapper_flt_0_dmem_ren_o),
+        .web_i(eisv_core_wrapper_flt_0_dmem_byte_enable_o),
         .web_o(dmem_interface_0_web_o),
-        .wen_i(saa_flt_0_dmem_wen_o));
+        .wen_i(eisv_core_wrapper_flt_0_dmem_wen_o));
   design_1_dual_clock_bram_0_1 dual_clock_bram_0
-       (.addra(axi_bram_ctrl_0_bram_addr_a[11:0]),
-        .addrb(saa_flt_0_imem_addr_o[11:0]),
+       (.addra(xlslice_3_Dout),
+        .addrb(xlslice_1_Dout),
         .clka(axi_bram_ctrl_0_bram_clk_a),
         .clkb(clk_gate_top_0_clk_o),
         .dina(axi_bram_ctrl_0_bram_wrdata_a),
@@ -700,12 +716,12 @@ module design_1
         .wea(axi_bram_ctrl_0_bram_we_a),
         .web(imem_interface_0_web_o));
   design_1_dual_clock_bram_1_1 dual_clock_bram_1
-       (.addra(axi_bram_ctrl_1_bram_addr_a[11:0]),
-        .addrb(saa_flt_0_dmem_addr_o[11:0]),
+       (.addra(xlslice_4_Dout),
+        .addrb(xlslice_2_Dout),
         .clka(axi_bram_ctrl_1_bram_clk_a),
         .clkb(clk_gate_top_0_clk_o),
         .dina(axi_bram_ctrl_1_bram_wrdata_a),
-        .dinb(saa_flt_0_dmem_wdata_o),
+        .dinb(eisv_core_wrapper_flt_0_dmem_wdata_o),
         .douta(dual_clock_bram_1_douta),
         .doutb(dual_clock_bram_1_doutb),
         .ena(axi_bram_ctrl_1_bram_en_a),
@@ -714,11 +730,45 @@ module design_1
         .rstb(ilconstant_0_dout),
         .wea(axi_bram_ctrl_1_bram_we_a),
         .web(dmem_interface_0_web_o));
+  design_1_eisv_core_wrapper_flt_0_0 eisv_core_wrapper_flt_0
+       (.clk_i(clk_gate_top_0_clk_o),
+        .clk_scan(clk_gate_top_1_clk_o),
+        .dmem_addr_o(eisv_core_wrapper_flt_0_dmem_addr_o),
+        .dmem_byte_enable_o(eisv_core_wrapper_flt_0_dmem_byte_enable_o),
+        .dmem_rdata_i(dual_clock_bram_1_doutb),
+        .dmem_ren_o(eisv_core_wrapper_flt_0_dmem_ren_o),
+        .dmem_wdata_o(eisv_core_wrapper_flt_0_dmem_wdata_o),
+        .dmem_wen_o(eisv_core_wrapper_flt_0_dmem_wen_o),
+        .external_interrupt_pending_i(ilconstant_1_dout),
+        .imem_addr_o(eisv_core_wrapper_flt_0_imem_addr_o),
+        .imem_rdata_i(dual_clock_bram_0_doutb),
+        .imem_ren_o(eisv_core_wrapper_flt_0_imem_ren_o),
+        .rst_ni(reset_top_0_rst_o),
+        .scan_in(scan_chain_top_0_scan_chain_o[0]),
+        .timer_interrupt_pending_i(ilconstant_1_dout));
+  design_1_ila_0_0 ila_0
+       (.clk(processing_system7_0_FCLK_CLK0),
+        .probe0(reset_top_0_rst_o),
+        .probe1(eisv_core_wrapper_flt_0_imem_addr_o),
+        .probe10(scan_chain_top_0_done_ff_dbg),
+        .probe11(scan_chain_top_0_active_ff_dbg),
+        .probe12(clk_gate_top_0_clk_enabled_o),
+        .probe13(clk_gate_top_1_clk_enabled_o),
+        .probe14(reset_top_0_active_ff_dbg),
+        .probe15(reset_top_0_done_ff_dbg),
+        .probe2(dual_clock_bram_0_doutb),
+        .probe3(eisv_core_wrapper_flt_0_dmem_addr_o),
+        .probe4(eisv_core_wrapper_flt_0_dmem_wdata_o),
+        .probe5(dual_clock_bram_1_doutb),
+        .probe6(eisv_core_wrapper_flt_0_dmem_ren_o),
+        .probe7(eisv_core_wrapper_flt_0_dmem_wen_o),
+        .probe8(clk_gate_top_1_clk_o),
+        .probe9(xlslice_0_Dout));
   assign ilconstant_0_dout = 1'h0;
-  
+  assign ilconstant_1_dout = 1'h0;
   design_1_imem_interface_0_0 imem_interface_0
        (.en_o(imem_interface_0_en_o),
-        .ren_i(saa_flt_0_imem_ren_o),
+        .ren_i(eisv_core_wrapper_flt_0_imem_ren_o),
         .web_o(imem_interface_0_web_o));
   design_1_pc_monitor_top_0_0 pc_monitor_top_0
        (.S_AXI_ACLK(processing_system7_0_FCLK_CLK0),
@@ -742,7 +792,7 @@ module design_1
         .S_AXI_WREADY(axi_interconnect_0_M06_AXI_WREADY),
         .S_AXI_WSTRB(axi_interconnect_0_M06_AXI_WSTRB),
         .S_AXI_WVALID(axi_interconnect_0_M06_AXI_WVALID),
-        .pc_i(saa_flt_0_imem_addr_o));
+        .pc_i(eisv_core_wrapper_flt_0_imem_addr_o));
   (* BMM_INFO_PROCESSOR = "arm > design_1 axi_bram_ctrl_0 design_1 axi_bram_ctrl_1" *) 
   (* KEEP_HIERARCHY = "yes" *) 
   design_1_processing_system7_0_0 processing_system7_0
@@ -833,6 +883,8 @@ module design_1
         .S_AXI_WREADY(axi_interconnect_0_M05_AXI_WREADY),
         .S_AXI_WSTRB(axi_interconnect_0_M05_AXI_WSTRB),
         .S_AXI_WVALID(axi_interconnect_0_M05_AXI_WVALID),
+        .active_ff_dbg(reset_top_0_active_ff_dbg),
+        .done_ff_dbg(reset_top_0_done_ff_dbg),
         .main_clk(clk_gate_top_0_clk_o),
         .rst_o(reset_top_0_rst_o));
   design_1_rst_ps7_0_100M_0 rst_ps7_0_100M
@@ -842,19 +894,6 @@ module design_1
         .mb_debug_sys_rst(1'b0),
         .peripheral_aresetn(rst_ps7_0_100M_peripheral_aresetn),
         .slowest_sync_clk(processing_system7_0_FCLK_CLK0));
-  design_1_saa_flt_0_0 saa_flt_0
-       (.clk_i(clk_gate_top_0_clk_o),
-        .clk_scan(clk_gate_top_1_clk_o),
-        .dmem_addr_o(saa_flt_0_dmem_addr_o),
-        .dmem_rdata_i(dual_clock_bram_1_doutb),
-        .dmem_ren_o(saa_flt_0_dmem_ren_o),
-        .dmem_wdata_o(saa_flt_0_dmem_wdata_o),
-        .dmem_wen_o(saa_flt_0_dmem_wen_o),
-        .imem_addr_o(saa_flt_0_imem_addr_o),
-        .imem_rdata_i(dual_clock_bram_0_doutb),
-        .imem_ren_o(saa_flt_0_imem_ren_o),
-        .rst_ni(reset_top_0_rst_o),
-        .scan_in(scan_chain_top_0_scan_chain_o[0]));
   design_1_scan_chain_top_0_0 scan_chain_top_0
        (.S_AXI_ACLK(processing_system7_0_FCLK_CLK0),
         .S_AXI_ARADDR(axi_interconnect_0_M04_AXI_ARADDR[0]),
@@ -877,10 +916,27 @@ module design_1
         .S_AXI_WREADY(axi_interconnect_0_M04_AXI_WREADY),
         .S_AXI_WSTRB(axi_interconnect_0_M04_AXI_WSTRB),
         .S_AXI_WVALID(axi_interconnect_0_M04_AXI_WVALID),
+        .active_ff_dbg(scan_chain_top_0_active_ff_dbg),
+        .done_ff_dbg(scan_chain_top_0_done_ff_dbg),
         .scan_chain_o(scan_chain_top_0_scan_chain_o),
         .scn_chn_clk_i(clk_gate_top_1_clk_o));
   design_1_xlconstant_0_0 xlconstant_0
        (.dout(xlconstant_0_dout));
+  design_1_xlslice_0_0 xlslice_0
+       (.Din(scan_chain_top_0_scan_chain_o),
+        .Dout(xlslice_0_Dout));
+  design_1_xlslice_1_0 xlslice_1
+       (.Din(eisv_core_wrapper_flt_0_imem_addr_o),
+        .Dout(xlslice_1_Dout));
+  design_1_xlslice_1_1 xlslice_2
+       (.Din(eisv_core_wrapper_flt_0_dmem_addr_o),
+        .Dout(xlslice_2_Dout));
+  design_1_xlslice_1_2 xlslice_3
+       (.Din(axi_bram_ctrl_0_bram_addr_a),
+        .Dout(xlslice_3_Dout));
+  design_1_xlslice_3_0 xlslice_4
+       (.Din(axi_bram_ctrl_1_bram_addr_a),
+        .Dout(xlslice_4_Dout));
 endmodule
 
 module design_1_axi_interconnect_0_0

@@ -1,8 +1,8 @@
 // Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
 // Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
-// Tool Version: Vivado v.2024.2.1 (lin64) Build 5266912 Sun Dec 15 09:03:31 MST 2024
-// Date        : Tue Apr  1 19:29:36 2025
+// Tool Version: Vivado v.2024.2 (lin64) Build 5239630 Fri Nov 08 22:34:34 MST 2024
+// Date        : Thu Jul 10 15:17:49 2025
 // Host        : laptop-homann-25.eis.tu-bs.de running 64-bit Ubuntu 24.04.2 LTS
 // Command     : write_verilog -force -mode funcsim
 //               /home/jhomann/Projects/OpenFLINT/repos/public/OpenFI4ASIC/runtime/vivado/OpenFI4ASICSystem/OpenFI4ASICSystem.gen/sources_1/bd/design_1/ip/design_1_scan_chain_top_0_0/design_1_scan_chain_top_0_0_sim_netlist.v
@@ -14,11 +14,13 @@
 `timescale 1 ps / 1 ps
 
 (* CHECK_LICENSE_TYPE = "design_1_scan_chain_top_0_0,scan_chain_top,{}" *) (* DowngradeIPIdentifiedWarnings = "yes" *) (* IP_DEFINITION_SOURCE = "module_ref" *) 
-(* X_CORE_INFO = "scan_chain_top,Vivado 2024.2.1" *) 
+(* X_CORE_INFO = "scan_chain_top,Vivado 2024.2" *) 
 (* NotValidForBitStream *)
 module design_1_scan_chain_top_0_0
    (scan_chain_o,
     scn_chn_clk_i,
+    done_ff_dbg,
+    active_ff_dbg,
     S_AXI_ACLK,
     S_AXI_ARESETN,
     S_AXI_AWADDR,
@@ -42,6 +44,8 @@ module design_1_scan_chain_top_0_0
     S_AXI_RREADY);
   output [2:0]scan_chain_o;
   input scn_chn_clk_i;
+  output done_ff_dbg;
+  output active_ff_dbg;
   (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 S_AXI_ACLK CLK" *) (* X_INTERFACE_MODE = "slave" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME S_AXI_ACLK, ASSOCIATED_BUSIF S_AXI, ASSOCIATED_RESET S_AXI_ARESETN, FREQ_HZ 50000000, FREQ_TOLERANCE_HZ 0, PHASE 0.0, CLK_DOMAIN design_1_processing_system7_0_0_FCLK_CLK0, INSERT_VIP 0" *) input S_AXI_ACLK;
   (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 S_AXI_ARESETN RST" *) (* X_INTERFACE_MODE = "slave" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME S_AXI_ARESETN, POLARITY ACTIVE_LOW, INSERT_VIP 0" *) input S_AXI_ARESETN;
   (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI AWADDR" *) (* X_INTERFACE_MODE = "slave" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME S_AXI, DATA_WIDTH 32, PROTOCOL AXI4LITE, FREQ_HZ 50000000, ID_WIDTH 0, ADDR_WIDTH 1, AWUSER_WIDTH 0, ARUSER_WIDTH 0, WUSER_WIDTH 0, RUSER_WIDTH 0, BUSER_WIDTH 0, READ_WRITE_MODE READ_WRITE, HAS_BURST 0, HAS_LOCK 0, HAS_PROT 1, HAS_CACHE 0, HAS_QOS 0, HAS_REGION 0, HAS_WSTRB 1, HAS_BRESP 1, HAS_RRESP 1, SUPPORTS_NARROW_BURST 0, NUM_READ_OUTSTANDING 1, NUM_WRITE_OUTSTANDING 1, MAX_BURST_LENGTH 1, PHASE 0.0, CLK_DOMAIN design_1_processing_system7_0_0_FCLK_CLK0, NUM_READ_THREADS 1, NUM_WRITE_THREADS 1, RUSER_BITS_PER_BYTE 0, WUSER_BITS_PER_BYTE 0, INSERT_VIP 0" *) input [0:0]S_AXI_AWADDR;
@@ -79,6 +83,8 @@ module design_1_scan_chain_top_0_0
   wire [31:0]S_AXI_WDATA;
   wire S_AXI_WREADY;
   wire S_AXI_WVALID;
+  wire active_ff_dbg;
+  wire done_ff_dbg;
   wire [2:0]scan_chain_o;
   wire scn_chn_clk_i;
 
@@ -135,6 +141,8 @@ module design_1_scan_chain_top_0_0
         .S_AXI_WDATA(S_AXI_WDATA[2:0]),
         .S_AXI_WREADY(S_AXI_WREADY),
         .S_AXI_WVALID(S_AXI_WVALID),
+        .active_ff_dbg(active_ff_dbg),
+        .done_ff_reg(done_ff_dbg),
         .scan_chain_o(scan_chain_o),
         .scn_chn_clk_i(scn_chn_clk_i));
 endmodule
@@ -195,7 +203,7 @@ module design_1_scan_chain_top_0_0_read_write_axi
   wire [2:0]S_AXI_WDATA;
   wire S_AXI_WREADY;
   wire S_AXI_WVALID;
-  wire read_fsm_state_ff_i_2_n_0;
+  wire read_fsm_state_ff_i_1_n_0;
   wire write_address_ff;
   wire \write_address_ff[0]_i_1_n_0 ;
   wire [2:0]write_data_ff;
@@ -270,21 +278,21 @@ module design_1_scan_chain_top_0_0_read_write_axi
         .O(S_AXI_WREADY));
   LUT1 #(
     .INIT(2'h1)) 
-    read_fsm_state_ff_i_1
+    done_ff_i_1
        (.I0(S_AXI_ARESETN),
         .O(S_AXI_ARESETN_0));
   (* SOFT_HLUTNM = "soft_lutpair4" *) 
   LUT3 #(
     .INIT(8'h74)) 
-    read_fsm_state_ff_i_2
+    read_fsm_state_ff_i_1
        (.I0(S_AXI_RREADY),
         .I1(S_AXI_RVALID),
         .I2(S_AXI_ARVALID),
-        .O(read_fsm_state_ff_i_2_n_0));
+        .O(read_fsm_state_ff_i_1_n_0));
   FDRE read_fsm_state_ff_reg
        (.C(S_AXI_ACLK),
         .CE(1'b1),
-        .D(read_fsm_state_ff_i_2_n_0),
+        .D(read_fsm_state_ff_i_1_n_0),
         .Q(S_AXI_RVALID),
         .R(S_AXI_ARESETN_0));
   (* SOFT_HLUTNM = "soft_lutpair0" *) 
@@ -354,30 +362,30 @@ endmodule
 
 (* ORIG_REF_NAME = "scan_chain_router" *) 
 module design_1_scan_chain_top_0_0_scan_chain_router
-   (scan_chain_o,
+   (done_ff_reg_0,
+    active_ff_reg_0,
+    scan_chain_o,
     scn_chn_clk_i,
-    S_AXI_ARESETN,
+    done_ff_reg_1,
     write_address_ff,
     write_fsm_state_ff,
-    active_ff_reg_0,
     S_AXI_ACLK,
     write_data_ff);
+  output done_ff_reg_0;
+  output active_ff_reg_0;
   output [2:0]scan_chain_o;
   input scn_chn_clk_i;
-  input S_AXI_ARESETN;
+  input done_ff_reg_1;
   input write_address_ff;
   input [1:0]write_fsm_state_ff;
-  input active_ff_reg_0;
   input S_AXI_ACLK;
   input [2:0]write_data_ff;
 
-  wire \??3_out ;
   wire S_AXI_ACLK;
-  wire S_AXI_ARESETN;
-  wire active_ff;
   wire active_ff_i_1_n_0;
   wire active_ff_reg_0;
-  wire done_ff_i_1_n_0;
+  wire done_ff_reg_0;
+  wire done_ff_reg_1;
   wire [2:0]scan_chain_ff;
   wire \scan_chain_ff[0]_i_1_n_0 ;
   wire \scan_chain_ff[1]_i_1_n_0 ;
@@ -391,31 +399,24 @@ module design_1_scan_chain_top_0_0_scan_chain_router
   LUT5 #(
     .INIT(32'h55750030)) 
     active_ff_i_1
-       (.I0(\??3_out ),
+       (.I0(done_ff_reg_0),
         .I1(write_address_ff),
         .I2(write_fsm_state_ff[1]),
         .I3(write_fsm_state_ff[0]),
-        .I4(active_ff),
+        .I4(active_ff_reg_0),
         .O(active_ff_i_1_n_0));
   FDRE active_ff_reg
        (.C(S_AXI_ACLK),
         .CE(1'b1),
         .D(active_ff_i_1_n_0),
-        .Q(active_ff),
-        .R(active_ff_reg_0));
-  (* SOFT_HLUTNM = "soft_lutpair6" *) 
-  LUT2 #(
-    .INIT(4'h8)) 
-    done_ff_i_1
-       (.I0(active_ff),
-        .I1(S_AXI_ARESETN),
-        .O(done_ff_i_1_n_0));
-  FDRE done_ff_reg
+        .Q(active_ff_reg_0),
+        .R(done_ff_reg_1));
+  FDCE done_ff_reg
        (.C(scn_chn_clk_i),
         .CE(1'b1),
-        .D(done_ff_i_1_n_0),
-        .Q(\??3_out ),
-        .R(1'b0));
+        .CLR(done_ff_reg_1),
+        .D(active_ff_reg_0),
+        .Q(done_ff_reg_0));
   LUT5 #(
     .INIT(32'hFFEF0020)) 
     \scan_chain_ff[0]_i_1 
@@ -448,41 +449,40 @@ module design_1_scan_chain_top_0_0_scan_chain_router
         .CE(1'b1),
         .D(\scan_chain_ff[0]_i_1_n_0 ),
         .Q(scan_chain_ff[0]),
-        .R(active_ff_reg_0));
+        .R(done_ff_reg_1));
   FDRE \scan_chain_ff_reg[1] 
        (.C(S_AXI_ACLK),
         .CE(1'b1),
         .D(\scan_chain_ff[1]_i_1_n_0 ),
         .Q(scan_chain_ff[1]),
-        .R(active_ff_reg_0));
+        .R(done_ff_reg_1));
   FDRE \scan_chain_ff_reg[2] 
        (.C(S_AXI_ACLK),
         .CE(1'b1),
         .D(\scan_chain_ff[2]_i_1_n_0 ),
         .Q(scan_chain_ff[2]),
-        .R(active_ff_reg_0));
-  (* SOFT_HLUTNM = "soft_lutpair6" *) 
+        .R(done_ff_reg_1));
   LUT3 #(
     .INIT(8'h40)) 
     \scan_chain_o[0]_INST_0 
-       (.I0(\??3_out ),
-        .I1(active_ff),
+       (.I0(done_ff_reg_0),
+        .I1(active_ff_reg_0),
         .I2(scan_chain_ff[0]),
         .O(scan_chain_o[0]));
   (* SOFT_HLUTNM = "soft_lutpair5" *) 
   LUT3 #(
     .INIT(8'h40)) 
     \scan_chain_o[1]_INST_0 
-       (.I0(\??3_out ),
-        .I1(active_ff),
+       (.I0(done_ff_reg_0),
+        .I1(active_ff_reg_0),
         .I2(scan_chain_ff[1]),
         .O(scan_chain_o[1]));
   (* SOFT_HLUTNM = "soft_lutpair5" *) 
   LUT3 #(
     .INIT(8'h40)) 
     \scan_chain_o[2]_INST_0 
-       (.I0(\??3_out ),
-        .I1(active_ff),
+       (.I0(done_ff_reg_0),
+        .I1(active_ff_reg_0),
         .I2(scan_chain_ff[2]),
         .O(scan_chain_o[2]));
 endmodule
@@ -490,6 +490,8 @@ endmodule
 (* ORIG_REF_NAME = "scan_chain_top" *) 
 module design_1_scan_chain_top_0_0_scan_chain_top
    (S_AXI_WREADY,
+    done_ff_reg,
+    active_ff_dbg,
     S_AXI_BVALID,
     S_AXI_AWREADY,
     S_AXI_ARREADY,
@@ -506,6 +508,8 @@ module design_1_scan_chain_top_0_0_scan_chain_top
     S_AXI_AWADDR,
     scn_chn_clk_i);
   output S_AXI_WREADY;
+  output done_ff_reg;
+  output active_ff_dbg;
   output S_AXI_BVALID;
   output S_AXI_AWREADY;
   output S_AXI_ARREADY;
@@ -536,6 +540,8 @@ module design_1_scan_chain_top_0_0_scan_chain_top
   wire [2:0]S_AXI_WDATA;
   wire S_AXI_WREADY;
   wire S_AXI_WVALID;
+  wire active_ff_dbg;
+  wire done_ff_reg;
   wire read_write_axi_inst_n_1;
   wire [2:0]scan_chain_o;
   wire scn_chn_clk_i;
@@ -564,8 +570,9 @@ module design_1_scan_chain_top_0_0_scan_chain_top
         .write_fsm_state_ff(write_fsm_state_ff));
   design_1_scan_chain_top_0_0_scan_chain_router scan_chain_router_inst
        (.S_AXI_ACLK(S_AXI_ACLK),
-        .S_AXI_ARESETN(S_AXI_ARESETN),
-        .active_ff_reg_0(read_write_axi_inst_n_1),
+        .active_ff_reg_0(active_ff_dbg),
+        .done_ff_reg_0(done_ff_reg),
+        .done_ff_reg_1(read_write_axi_inst_n_1),
         .scan_chain_o(scan_chain_o),
         .scn_chn_clk_i(scn_chn_clk_i),
         .write_address_ff(write_address_ff),

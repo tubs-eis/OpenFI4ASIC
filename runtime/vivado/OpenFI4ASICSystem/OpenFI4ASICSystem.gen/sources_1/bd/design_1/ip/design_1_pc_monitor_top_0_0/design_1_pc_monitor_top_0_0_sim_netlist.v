@@ -1,8 +1,8 @@
 // Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
 // Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
-// Tool Version: Vivado v.2024.2.1 (lin64) Build 5266912 Sun Dec 15 09:03:31 MST 2024
-// Date        : Tue Apr  1 19:29:40 2025
+// Tool Version: Vivado v.2024.2 (lin64) Build 5239630 Fri Nov 08 22:34:34 MST 2024
+// Date        : Thu Jul 10 12:22:35 2025
 // Host        : laptop-homann-25.eis.tu-bs.de running 64-bit Ubuntu 24.04.2 LTS
 // Command     : write_verilog -force -mode funcsim
 //               /home/jhomann/Projects/OpenFLINT/repos/public/OpenFI4ASIC/runtime/vivado/OpenFI4ASICSystem/OpenFI4ASICSystem.gen/sources_1/bd/design_1/ip/design_1_pc_monitor_top_0_0/design_1_pc_monitor_top_0_0_sim_netlist.v
@@ -14,7 +14,7 @@
 `timescale 1 ps / 1 ps
 
 (* CHECK_LICENSE_TYPE = "design_1_pc_monitor_top_0_0,pc_monitor_top,{}" *) (* DowngradeIPIdentifiedWarnings = "yes" *) (* IP_DEFINITION_SOURCE = "module_ref" *) 
-(* X_CORE_INFO = "pc_monitor_top,Vivado 2024.2.1" *) 
+(* X_CORE_INFO = "pc_monitor_top,Vivado 2024.2" *) 
 (* NotValidForBitStream *)
 module design_1_pc_monitor_top_0_0
    (pc_i,

@@ -1,8 +1,8 @@
 -- Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
 -- Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
--- Tool Version: Vivado v.2024.2.1 (lin64) Build 5266912 Sun Dec 15 09:03:31 MST 2024
--- Date        : Tue Apr  1 19:29:36 2025
+-- Tool Version: Vivado v.2024.2 (lin64) Build 5239630 Fri Nov 08 22:34:34 MST 2024
+-- Date        : Thu Jul 10 15:17:49 2025
 -- Host        : laptop-homann-25.eis.tu-bs.de running 64-bit Ubuntu 24.04.2 LTS
 -- Command     : write_vhdl -force -mode funcsim
 --               /home/jhomann/Projects/OpenFLINT/repos/public/OpenFI4ASIC/runtime/vivado/OpenFI4ASICSystem/OpenFI4ASICSystem.gen/sources_1/bd/design_1/ip/design_1_scan_chain_top_0_0/design_1_scan_chain_top_0_0_sim_netlist.vhdl
@@ -45,7 +45,7 @@ architecture STRUCTURE of design_1_scan_chain_top_0_0_read_write_axi is
   signal \FSM_sequential_write_fsm_state_ff[1]_i_1_n_0\ : STD_LOGIC;
   signal \^s_axi_aresetn_0\ : STD_LOGIC;
   signal \^s_axi_rvalid\ : STD_LOGIC;
-  signal read_fsm_state_ff_i_2_n_0 : STD_LOGIC;
+  signal read_fsm_state_ff_i_1_n_0 : STD_LOGIC;
   signal \^write_address_ff\ : STD_LOGIC;
   signal \write_address_ff[0]_i_1_n_0\ : STD_LOGIC;
   signal \^write_data_ff\ : STD_LOGIC_VECTOR ( 2 downto 0 );
@@ -63,7 +63,7 @@ architecture STRUCTURE of design_1_scan_chain_top_0_0_read_write_axi is
   attribute SOFT_HLUTNM of S_AXI_AWREADY_INST_0 : label is "soft_lutpair3";
   attribute SOFT_HLUTNM of S_AXI_BVALID_INST_0 : label is "soft_lutpair2";
   attribute SOFT_HLUTNM of S_AXI_WREADY_INST_0 : label is "soft_lutpair0";
-  attribute SOFT_HLUTNM of read_fsm_state_ff_i_2 : label is "soft_lutpair4";
+  attribute SOFT_HLUTNM of read_fsm_state_ff_i_1 : label is "soft_lutpair4";
   attribute SOFT_HLUTNM of \write_address_ff[0]_i_1\ : label is "soft_lutpair0";
   attribute SOFT_HLUTNM of \write_data_ff[1]_i_1\ : label is "soft_lutpair3";
   attribute SOFT_HLUTNM of \write_data_ff[2]_i_1\ : label is "soft_lutpair2";
@@ -153,7 +153,7 @@ S_AXI_WREADY_INST_0: unisim.vcomponents.LUT2
       I1 => \^write_fsm_state_ff\(1),
       O => S_AXI_WREADY
     );
-read_fsm_state_ff_i_1: unisim.vcomponents.LUT1
+done_ff_i_1: unisim.vcomponents.LUT1
     generic map(
       INIT => X"1"
     )
@@ -161,7 +161,7 @@ read_fsm_state_ff_i_1: unisim.vcomponents.LUT1
       I0 => S_AXI_ARESETN,
       O => \^s_axi_aresetn_0\
     );
-read_fsm_state_ff_i_2: unisim.vcomponents.LUT3
+read_fsm_state_ff_i_1: unisim.vcomponents.LUT3
     generic map(
       INIT => X"74"
     )
@@ -169,13 +169,13 @@ read_fsm_state_ff_i_2: unisim.vcomponents.LUT3
       I0 => S_AXI_RREADY,
       I1 => \^s_axi_rvalid\,
       I2 => S_AXI_ARVALID,
-      O => read_fsm_state_ff_i_2_n_0
+      O => read_fsm_state_ff_i_1_n_0
     );
 read_fsm_state_ff_reg: unisim.vcomponents.FDRE
      port map (
       C => S_AXI_ACLK,
       CE => '1',
-      D => read_fsm_state_ff_i_2_n_0,
+      D => read_fsm_state_ff_i_1_n_0,
       Q => \^s_axi_rvalid\,
       R => \^s_axi_aresetn_0\
     );
@@ -266,12 +266,13 @@ library UNISIM;
 use UNISIM.VCOMPONENTS.ALL;
 entity design_1_scan_chain_top_0_0_scan_chain_router is
   port (
+    done_ff_reg_0 : out STD_LOGIC;
+    active_ff_reg_0 : out STD_LOGIC;
     scan_chain_o : out STD_LOGIC_VECTOR ( 2 downto 0 );
     scn_chn_clk_i : in STD_LOGIC;
-    S_AXI_ARESETN : in STD_LOGIC;
+    done_ff_reg_1 : in STD_LOGIC;
     write_address_ff : in STD_LOGIC;
     write_fsm_state_ff : in STD_LOGIC_VECTOR ( 1 downto 0 );
-    active_ff_reg_0 : in STD_LOGIC;
     S_AXI_ACLK : in STD_LOGIC;
     write_data_ff : in STD_LOGIC_VECTOR ( 2 downto 0 )
   );
@@ -280,30 +281,29 @@ entity design_1_scan_chain_top_0_0_scan_chain_router is
 end design_1_scan_chain_top_0_0_scan_chain_router;
 
 architecture STRUCTURE of design_1_scan_chain_top_0_0_scan_chain_router is
-  signal \??3_out\ : STD_LOGIC;
-  signal active_ff : STD_LOGIC;
   signal active_ff_i_1_n_0 : STD_LOGIC;
-  signal done_ff_i_1_n_0 : STD_LOGIC;
+  signal \^active_ff_reg_0\ : STD_LOGIC;
+  signal \^done_ff_reg_0\ : STD_LOGIC;
   signal scan_chain_ff : STD_LOGIC_VECTOR ( 2 downto 0 );
   signal \scan_chain_ff[0]_i_1_n_0\ : STD_LOGIC;
   signal \scan_chain_ff[1]_i_1_n_0\ : STD_LOGIC;
   signal \scan_chain_ff[2]_i_1_n_0\ : STD_LOGIC;
   attribute SOFT_HLUTNM : string;
-  attribute SOFT_HLUTNM of done_ff_i_1 : label is "soft_lutpair6";
-  attribute SOFT_HLUTNM of \scan_chain_o[0]_INST_0\ : label is "soft_lutpair6";
   attribute SOFT_HLUTNM of \scan_chain_o[1]_INST_0\ : label is "soft_lutpair5";
   attribute SOFT_HLUTNM of \scan_chain_o[2]_INST_0\ : label is "soft_lutpair5";
 begin
+  active_ff_reg_0 <= \^active_ff_reg_0\;
+  done_ff_reg_0 <= \^done_ff_reg_0\;
 active_ff_i_1: unisim.vcomponents.LUT5
     generic map(
       INIT => X"55750030"
     )
         port map (
-      I0 => \??3_out\,
+      I0 => \^done_ff_reg_0\,
       I1 => write_address_ff,
       I2 => write_fsm_state_ff(1),
       I3 => write_fsm_state_ff(0),
-      I4 => active_ff,
+      I4 => \^active_ff_reg_0\,
       O => active_ff_i_1_n_0
     );
 active_ff_reg: unisim.vcomponents.FDRE
@@ -311,25 +311,16 @@ active_ff_reg: unisim.vcomponents.FDRE
       C => S_AXI_ACLK,
       CE => '1',
       D => active_ff_i_1_n_0,
-      Q => active_ff,
-      R => active_ff_reg_0
+      Q => \^active_ff_reg_0\,
+      R => done_ff_reg_1
     );
-done_ff_i_1: unisim.vcomponents.LUT2
-    generic map(
-      INIT => X"8"
-    )
-        port map (
-      I0 => active_ff,
-      I1 => S_AXI_ARESETN,
-      O => done_ff_i_1_n_0
-    );
-done_ff_reg: unisim.vcomponents.FDRE
+done_ff_reg: unisim.vcomponents.FDCE
      port map (
       C => scn_chn_clk_i,
       CE => '1',
-      D => done_ff_i_1_n_0,
-      Q => \??3_out\,
-      R => '0'
+      CLR => done_ff_reg_1,
+      D => \^active_ff_reg_0\,
+      Q => \^done_ff_reg_0\
     );
 \scan_chain_ff[0]_i_1\: unisim.vcomponents.LUT5
     generic map(
@@ -373,7 +364,7 @@ done_ff_reg: unisim.vcomponents.FDRE
       CE => '1',
       D => \scan_chain_ff[0]_i_1_n_0\,
       Q => scan_chain_ff(0),
-      R => active_ff_reg_0
+      R => done_ff_reg_1
     );
 \scan_chain_ff_reg[1]\: unisim.vcomponents.FDRE
      port map (
@@ -381,7 +372,7 @@ done_ff_reg: unisim.vcomponents.FDRE
       CE => '1',
       D => \scan_chain_ff[1]_i_1_n_0\,
       Q => scan_chain_ff(1),
-      R => active_ff_reg_0
+      R => done_ff_reg_1
     );
 \scan_chain_ff_reg[2]\: unisim.vcomponents.FDRE
      port map (
@@ -389,15 +380,15 @@ done_ff_reg: unisim.vcomponents.FDRE
       CE => '1',
       D => \scan_chain_ff[2]_i_1_n_0\,
       Q => scan_chain_ff(2),
-      R => active_ff_reg_0
+      R => done_ff_reg_1
     );
 \scan_chain_o[0]_INST_0\: unisim.vcomponents.LUT3
     generic map(
       INIT => X"40"
     )
         port map (
-      I0 => \??3_out\,
-      I1 => active_ff,
+      I0 => \^done_ff_reg_0\,
+      I1 => \^active_ff_reg_0\,
       I2 => scan_chain_ff(0),
       O => scan_chain_o(0)
     );
@@ -406,8 +397,8 @@ done_ff_reg: unisim.vcomponents.FDRE
       INIT => X"40"
     )
         port map (
-      I0 => \??3_out\,
-      I1 => active_ff,
+      I0 => \^done_ff_reg_0\,
+      I1 => \^active_ff_reg_0\,
       I2 => scan_chain_ff(1),
       O => scan_chain_o(1)
     );
@@ -416,8 +407,8 @@ done_ff_reg: unisim.vcomponents.FDRE
       INIT => X"40"
     )
         port map (
-      I0 => \??3_out\,
-      I1 => active_ff,
+      I0 => \^done_ff_reg_0\,
+      I1 => \^active_ff_reg_0\,
       I2 => scan_chain_ff(2),
       O => scan_chain_o(2)
     );
@@ -429,6 +420,8 @@ use UNISIM.VCOMPONENTS.ALL;
 entity design_1_scan_chain_top_0_0_scan_chain_top is
   port (
     S_AXI_WREADY : out STD_LOGIC;
+    done_ff_reg : out STD_LOGIC;
+    active_ff_dbg : out STD_LOGIC;
     S_AXI_BVALID : out STD_LOGIC;
     S_AXI_AWREADY : out STD_LOGIC;
     S_AXI_ARREADY : out STD_LOGIC;
@@ -479,8 +472,9 @@ read_write_axi_inst: entity work.design_1_scan_chain_top_0_0_read_write_axi
 scan_chain_router_inst: entity work.design_1_scan_chain_top_0_0_scan_chain_router
      port map (
       S_AXI_ACLK => S_AXI_ACLK,
-      S_AXI_ARESETN => S_AXI_ARESETN,
-      active_ff_reg_0 => read_write_axi_inst_n_1,
+      active_ff_reg_0 => active_ff_dbg,
+      done_ff_reg_0 => done_ff_reg,
+      done_ff_reg_1 => read_write_axi_inst_n_1,
       scan_chain_o(2 downto 0) => scan_chain_o(2 downto 0),
       scn_chn_clk_i => scn_chn_clk_i,
       write_address_ff => write_address_ff,
@@ -496,6 +490,8 @@ entity design_1_scan_chain_top_0_0 is
   port (
     scan_chain_o : out STD_LOGIC_VECTOR ( 2 downto 0 );
     scn_chn_clk_i : in STD_LOGIC;
+    done_ff_dbg : out STD_LOGIC;
+    active_ff_dbg : out STD_LOGIC;
     S_AXI_ACLK : in STD_LOGIC;
     S_AXI_ARESETN : in STD_LOGIC;
     S_AXI_AWADDR : in STD_LOGIC_VECTOR ( 0 to 0 );
@@ -527,7 +523,7 @@ entity design_1_scan_chain_top_0_0 is
   attribute IP_DEFINITION_SOURCE : string;
   attribute IP_DEFINITION_SOURCE of design_1_scan_chain_top_0_0 : entity is "module_ref";
   attribute X_CORE_INFO : string;
-  attribute X_CORE_INFO of design_1_scan_chain_top_0_0 : entity is "scan_chain_top,Vivado 2024.2.1";
+  attribute X_CORE_INFO of design_1_scan_chain_top_0_0 : entity is "scan_chain_top,Vivado 2024.2";
 end design_1_scan_chain_top_0_0;
 
 architecture STRUCTURE of design_1_scan_chain_top_0_0 is
@@ -619,6 +615,8 @@ inst: entity work.design_1_scan_chain_top_0_0_scan_chain_top
       S_AXI_WDATA(2 downto 0) => S_AXI_WDATA(2 downto 0),
       S_AXI_WREADY => S_AXI_WREADY,
       S_AXI_WVALID => S_AXI_WVALID,
+      active_ff_dbg => active_ff_dbg,
+      done_ff_reg => done_ff_dbg,
       scan_chain_o(2 downto 0) => scan_chain_o(2 downto 0),
       scn_chn_clk_i => scn_chn_clk_i
     );

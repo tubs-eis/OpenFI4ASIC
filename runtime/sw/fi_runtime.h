@@ -95,4 +95,27 @@ static inline fault_run_result_t fi_runtime_ff_fi_run(fi_runtime_t* fi_runtime, 
 	return rv;
 }
 
+static inline fault_run_result_t fi_runtime_mem_fi_run(fi_runtime_t* fi_runtime, memory_t* mem, uint64_t bit, uint32_t fault_cycle, uint32_t cycles) {
+    fi_runtime_reset(fi_runtime);
+	clk_gate_run_for_n_cycles(fi_runtime->main_clk_gate, fault_cycle+1);
+
+	memory_flip_bit(mem, bit);
+	
+	clk_gate_run_for_n_cycles(fi_runtime->main_clk_gate, cycles - fault_cycle);
+
+    fault_run_result_t rv;
+	rv.control_flow_violation = (fi_runtime->pc_reference != pc_monitor_read_pc(fi_runtime->pc_monitor));
+	rv.data_flow_violation = !memory_compare(&fi_runtime->dmem, fi_runtime->dmem_reference, 0, RAM_SIZE / 4);
+    rv.wrong_result = memory_read(&fi_runtime->dmem, RESULT_ADDR) != fi_runtime->dmem_reference[RESULT_ADDR]; // (((uint32_t volatile*)RAM_ADDR)[RESULT_ADDR] != DMEM_REFERENCE[RESULT_ADDR]);
+	return rv;
+}
+
+static inline fault_run_result_t fi_runtime_imem_fi_run(fi_runtime_t* fi_runtime, uint64_t bit, uint32_t fault_cycle, uint32_t cycles) {
+    return fi_runtime_mem_fi_run(fi_runtime, &fi_runtime->imem, bit, fault_cycle, cycles);
+}
+
+static inline fault_run_result_t fi_runtime_dmem_fi_run(fi_runtime_t* fi_runtime, uint64_t bit, uint32_t fault_cycle, uint32_t cycles) {
+    return fi_runtime_mem_fi_run(fi_runtime, &fi_runtime->dmem, bit, fault_cycle, cycles);
+}
+
 #endif

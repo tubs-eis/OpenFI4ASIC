@@ -95,5 +95,29 @@ int main() {
         putc('\n', stdout);
     }
 
+    printf("\n\n\n --------\nIMEM fault injection results:\n");
+    for (int word = 0; word < PROGRAM_LENGTH / 4; word++) {
+        for (int bit = 0; bit < 32; bit++) {
+            for (int err_cycl = 0; err_cycl < TOTAL_CYCLES; err_cycl++) {
+                fault_run_result_t result = fi_runtime_imem_fi_run(&fi_runtime, 32*word + bit, err_cycl, TOTAL_CYCLES);
+
+                putc('0' + ((result.control_flow_violation << 0) | (result.data_flow_violation << 1) | (result.wrong_result << 2)), stdout);
+            }
+            putc('\n', stdout); 
+        }
+    }
+
+    printf("\n\n\n --------\nDMEM fault injection results:\n");
+    for (int word = 0; word < RAM_SIZE / 4; word++) {
+        for (int bit = 0; bit < 32; bit++) {
+            for (int err_cycl = 0; err_cycl < TOTAL_CYCLES; err_cycl++) {
+                fault_run_result_t result = fi_runtime_dmem_fi_run(&fi_runtime, 32*word + bit, err_cycl, TOTAL_CYCLES);
+
+                putc('0' + ((result.control_flow_violation << 0) | (result.data_flow_violation << 1) | (result.wrong_result << 2)), stdout);
+            }
+            putc('\n', stdout); 
+        }
+    }
+
     return 0;
 }

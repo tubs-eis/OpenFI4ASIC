@@ -39,4 +39,14 @@ static inline bool memory_compare(memory_t* memory, uint32_t* reference, uint32_
     return memcmp((const void*) memory->base_addr, reference, size * 4) == 0;
 }
 
+static inline void memory_flip_bit(memory_t* memory, uint64_t bit) {
+    uint32_t word = bit / 32;
+    uint32_t bit_in_word = bit % 32;
+
+    uint32_t mask = 1 << bit_in_word;
+
+    uint32_t contents = memory_read(memory, word);
+    memory_write(memory, word, contents ^ mask);
+}
+
 #endif

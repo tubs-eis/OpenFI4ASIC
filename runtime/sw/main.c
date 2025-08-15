@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 #ifdef MULTIBOOT
 #include "xdevcfg.h"
@@ -6,7 +7,7 @@
 
 #include <stdio.h>
 #include <stdbool.h>
-#include "program.h"
+#include <ctype.h>
 
 #include "devices/clk_gate.h"
 #include "devices/scan_chain.h"
@@ -26,11 +27,12 @@
 #define SC_DEPTH 1706
 
 #define RAM_SIZE 4096
-#define RESULT_ADDR 1
-#define TOTAL_CYCLES 130
+#define RESULT_ADDR 48
+#define TOTAL_CYCLES 510
 #define FIB_INPUT 0x05
 
 #include "fi_runtime.h"
+#include "fi_shell.h"
 
 clk_gate_phys_t* main_clk_gate = (clk_gate_phys_t*) MAIN_CLK_ADDR;
 clk_gate_phys_t* scan_clk_gate = (clk_gate_phys_t*) SC_CLK_ADDR;
@@ -56,11 +58,9 @@ memory_t dmem = {
 struct Clk* scanChainClock = (struct Clk*) SC_CLK_ADDR;
 struct Clk* mainClk = (struct Clk*) MAIN_CLK_ADDR;
 
-void print_dmem(uint32_t volatile* dmem, int num_words) {
-    for (int i = 0; i < num_words; i++) {
-        printf("%d: %08lx\n", i, dmem[i]);
-    }
-}
+fi_runtime_t fi_runtime;
+
+fi_shell_t fi_shell;
 
 void print_pc() {
 	uint32_t test = pc_monitor_read_pc(pc_monitor);
@@ -74,50 +74,11 @@ int main() {
         .clk_gate_phys = scan_clk_gate
     };
 
-	printf("-------------\n\n\n\n");
-
-    fi_runtime_t fi_runtime;
-
     fi_runtime_new(&fi_runtime, imem, dmem, main_clk_gate, scan_chain, pc_monitor, reset_device);
 
-    fi_runtime_set_program(&fi_runtime, PROGRAM, PROGRAM_LENGTH / 4);
+    fi_shell_new(&fi_shell, &fi_runtime);
 
-    fi_runtime_reference_run(&fi_runtime, TOTAL_CYCLES);
-
-    printf("FF fault injection results:\n");
-
-    for (int ff = 0; ff < SC_DEPTH; ff++) {
-        for (int err_cycl = 0; err_cycl < TOTAL_CYCLES; err_cycl++) {
-            fault_run_result_t result = fi_runtime_ff_fi_run(&fi_runtime, ff, err_cycl, TOTAL_CYCLES);
-
-        	putc('0' + ((result.control_flow_violation << 0) | (result.data_flow_violation << 1) | (result.wrong_result << 2)), stdout);
-        }
-        putc('\n', stdout);
-    }
-
-    printf("\n\n\n --------\nIMEM fault injection results:\n");
-    for (int word = 0; word < PROGRAM_LENGTH / 4; word++) {
-        for (int bit = 0; bit < 32; bit++) {
-            for (int err_cycl = 0; err_cycl < TOTAL_CYCLES; err_cycl++) {
-                fault_run_result_t result = fi_runtime_imem_fi_run(&fi_runtime, 32*word + bit, err_cycl, TOTAL_CYCLES);
-
-                putc('0' + ((result.control_flow_violation << 0) | (result.data_flow_violation << 1) | (result.wrong_result << 2)), stdout);
-            }
-            putc('\n', stdout); 
-        }
-    }
-
-    printf("\n\n\n --------\nDMEM fault injection results:\n");
-    for (int word = 0; word < RAM_SIZE / 4; word++) {
-        for (int bit = 0; bit < 32; bit++) {
-            for (int err_cycl = 0; err_cycl < TOTAL_CYCLES; err_cycl++) {
-                fault_run_result_t result = fi_runtime_dmem_fi_run(&fi_runtime, 32*word + bit, err_cycl, TOTAL_CYCLES);
-
-                putc('0' + ((result.control_flow_violation << 0) | (result.data_flow_violation << 1) | (result.wrong_result << 2)), stdout);
-            }
-            putc('\n', stdout); 
-        }
-    }
+    fi_shell_run(&fi_shell);
 
     return 0;
 }

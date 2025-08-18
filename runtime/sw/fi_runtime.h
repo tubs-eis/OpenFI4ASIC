@@ -31,6 +31,8 @@ typedef struct {
     reset_phys_t* reset;
 
     uint32_t total_cycles;
+
+    bool imem_dirty;
 } fi_runtime_t;
 
 typedef struct {
@@ -61,6 +63,8 @@ static inline void fi_runtime_new(fi_runtime_t* fi_runtime, memory_t imem, memor
     fi_runtime->reset = reset;
 
     fi_runtime->total_cycles = 0;
+
+    fi_runtime->imem_dirty = false;
 }
 
 static inline void fi_runtime_set_program(fi_runtime_t* fi_runtime, uint32_t* program, uint32_t size) {
@@ -86,11 +90,12 @@ static inline void fi_runtime_reset(fi_runtime_t* fi_runtime) {
     reset_write(fi_runtime->reset, RESET_ACTIVE);
     memory_fill(&fi_runtime->dmem, 0, 0, fi_runtime->dmem.size / 4);
 
-    // TODO: The core cannot write here, this is only needed when doing imem bit flips
-    // memory_fill(&fi_runtime->imem, 0, 0, RAM_SIZE / 4);
-    // memory_copy_from(&fi_runtime->imem, fi_runtime->program, 0, fi_runtime->program_size);
+    if (fi_runtime->imem_dirty) {
+        memory_fill(&fi_runtime->imem, 0, 0, RAM_SIZE / 4);
+        memory_copy_from(&fi_runtime->imem, fi_runtime->program, 0, fi_runtime->program_size);
+        fi_runtime->imem_dirty = false;
+    }
 
-    // *((uint32_t volatile*)RAM_ADDR) = FIB_INPUT;
     clk_gate_run_for_n_cycles(fi_runtime->scan_chain.clk_gate_phys, 1);
 }
 
@@ -135,8 +140,11 @@ static inline fault_run_result_t fi_runtime_mem_fi_run(fi_runtime_t* fi_runtime,
     clk_gate_run_for_n_cycles(fi_runtime->main_clk_gate, fault_cycle+1);
 
     memory_flip_bit(mem, bit);
+    if (mem == &fi_runtime->imem) {
+        fi_runtime->imem_dirty = true;
+    }
 
-    clk_gate_run_for_n_cycles(fi_runtime->main_clk_gate, fi_runtime->total_cycles - fault_cycle);
+    clk_gate_run_for_n_cycles(fi_runtime->main_clk_gate, fi_runtime->total_cycles - fault_cycle-1);
 
     return fi_runtime_check_result(fi_runtime);
 }

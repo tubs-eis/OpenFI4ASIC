@@ -173,7 +173,7 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PPRDIR/../../rtl/pc_monitor_top.vhd">
+      <File Path="$PPRDIR/../../rtl/pc_monitor_top.vhd" Mode="RelativeOnly">
         <FileInfo>
           <Attr Name="Library" Val="fault_injection"/>
           <Attr Name="UsedIn" Val="synthesis"/>

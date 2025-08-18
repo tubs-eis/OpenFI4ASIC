@@ -7,7 +7,7 @@
    "Color Coded_ScaleFactor":"0.440362",
    "Color Coded_TopLeft":"-956,2",
    "Default View_ScaleFactor":"0.439425",
-   "Default View_TopLeft":"-726,-25",
+   "Default View_TopLeft":"-444,77",
    "Display-PortTypeClock":"true",
    "Display-PortTypeOthers":"true",
    "Display-PortTypeReset":"true",
@@ -27,7 +27,7 @@ preplace port DDR -pg 1 -lvl 6 -x 2120 -y 900 -defaultsOSRD
 preplace port FIXED_IO -pg 1 -lvl 6 -x 2120 -y 930 -defaultsOSRD
 preplace portBus LED -pg 1 -lvl 6 -x 2120 -y 20 -defaultsOSRD
 preplace inst processing_system7_0 -pg 1 -lvl 2 -x 630 -y 990 -defaultsOSRD
-preplace inst axi_interconnect_0 -pg 1 -lvl 3 -x 1090 -y 1170 -defaultsOSRD
+preplace inst axi_interconnect_0 -pg 1 -lvl 3 -x 1110 -y 1170 -defaultsOSRD
 preplace inst rst_ps7_0_100M -pg 1 -lvl 2 -x 630 -y 1260 -defaultsOSRD
 preplace inst clk_gate_top_0 -pg 1 -lvl 4 -x 1610 -y 1010 -defaultsOSRD
 preplace inst axi_bram_ctrl_0 -pg 1 -lvl 4 -x 1610 -y 270 -defaultsOSRD
@@ -49,67 +49,67 @@ preplace inst xlslice_1 -pg 1 -lvl 1 -x 170 -y 450 -defaultsOSRD
 preplace inst xlslice_2 -pg 1 -lvl 1 -x 170 -y 650 -defaultsOSRD
 preplace inst xlslice_3 -pg 1 -lvl 1 -x 170 -y 110 -defaultsOSRD
 preplace inst xlslice_4 -pg 1 -lvl 1 -x 170 -y 550 -defaultsOSRD
-preplace inst eisv_core_wrapper_flt_1 -pg 1 -lvl 3 -x 1090 -y 1630 -defaultsOSRD
-preplace netloc axi_bram_ctrl_0_bram_addr_a 1 0 5 40 50 300J 60 NJ 60 NJ 60 1770
-preplace netloc axi_bram_ctrl_0_bram_clk_a 1 1 4 320 10 NJ 10 NJ 10 1890
-preplace netloc axi_bram_ctrl_0_bram_en_a 1 1 4 410 40 NJ 40 NJ 40 1800
-preplace netloc axi_bram_ctrl_0_bram_rst_a 1 1 4 360 20 NJ 20 NJ 20 1870
-preplace netloc axi_bram_ctrl_0_bram_we_a 1 1 4 420 50 NJ 50 NJ 50 1790
-preplace netloc axi_bram_ctrl_0_bram_wrdata_a 1 1 4 400 30 NJ 30 NJ 30 1780
-preplace netloc axi_bram_ctrl_1_bram_addr_a 1 0 5 40 810 340J 790 NJ 790 1350J 630 1810
-preplace netloc axi_bram_ctrl_1_bram_clk_a 1 1 4 420 410 NJ 410 NJ 410 1770
-preplace netloc axi_bram_ctrl_1_bram_en_a 1 1 4 410 760 NJ 760 1320J 620 1870
-preplace netloc axi_bram_ctrl_1_bram_rst_a 1 1 4 420 750 NJ 750 1310J 610 1890
-preplace netloc axi_bram_ctrl_1_bram_we_a 1 1 4 380 800 NJ 800 1370J 640 1800
-preplace netloc axi_bram_ctrl_1_bram_wrdata_a 1 1 4 360 810 NJ 810 1380J 650 1780
+preplace inst eisv_core_wrapper_flt_1 -pg 1 -lvl 3 -x 1110 -y 1630 -defaultsOSRD
+preplace netloc axi_bram_ctrl_0_bram_addr_a 1 0 5 40 10 NJ 10 NJ 10 NJ 10 1790
+preplace netloc axi_bram_ctrl_0_bram_clk_a 1 1 4 320 20 NJ 20 NJ 20 1870
+preplace netloc axi_bram_ctrl_0_bram_en_a 1 1 4 330 30 NJ 30 NJ 30 1780
+preplace netloc axi_bram_ctrl_0_bram_rst_a 1 1 4 360 40 NJ 40 NJ 40 1810
+preplace netloc axi_bram_ctrl_0_bram_we_a 1 1 4 410 50 NJ 50 NJ 50 1890
+preplace netloc axi_bram_ctrl_0_bram_wrdata_a 1 1 4 420 60 NJ 60 NJ 60 1800
+preplace netloc axi_bram_ctrl_1_bram_addr_a 1 0 5 40 810 NJ 810 880J 610 NJ 610 1810
+preplace netloc axi_bram_ctrl_1_bram_clk_a 1 1 4 380 790 NJ 790 1450J 920 1800
+preplace netloc axi_bram_ctrl_1_bram_en_a 1 1 4 420 750 860J 620 NJ 620 1790
+preplace netloc axi_bram_ctrl_1_bram_rst_a 1 1 4 410 760 890J 630 NJ 630 1830
+preplace netloc axi_bram_ctrl_1_bram_we_a 1 1 4 400 770 900J 640 NJ 640 1870
+preplace netloc axi_bram_ctrl_1_bram_wrdata_a 1 1 4 390 780 NJ 780 1340J 650 1770
 preplace netloc clk_gate_top_0_clk_enabled_o 1 4 1 1890 1020n
-preplace netloc clk_gate_top_0_clk_o 1 1 4 400 770 860 1460 1440 1250 1770
-preplace netloc clk_gate_top_1_clk_enabled_o 1 4 1 1870 1340n
-preplace netloc clk_gate_top_1_clk_o 1 2 3 890 1790 1360 1660 1790
+preplace netloc clk_gate_top_0_clk_o 1 1 4 360 800 860 1450 1430 1250 1780
+preplace netloc clk_gate_top_1_clk_enabled_o 1 4 1 1860 1340n
+preplace netloc clk_gate_top_1_clk_o 1 2 3 900 1780 1440 1640 1870
 preplace netloc dmem_interface_0_en_o 1 1 1 330 670n
-preplace netloc dmem_interface_0_web_o 1 1 1 350 690n
-preplace netloc dual_clock_bram_0_douta 1 2 3 890 390 1440J 400 1770
-preplace netloc dual_clock_bram_0_doutb 1 2 3 870 1480 1360J 1590 1830
-preplace netloc dual_clock_bram_1_douta 1 2 3 NJ 570 NJ 570 1790
-preplace netloc dual_clock_bram_1_doutb 1 2 3 850 1780 1440J 1640 N
-preplace netloc eisv_core_wrapper_flt_1_dmem_addr_o 1 0 5 30 820 NJ 820 NJ 820 1380 1610 1860
-preplace netloc eisv_core_wrapper_flt_1_dmem_byte_enable_o 1 0 4 20 1440 NJ 1440 NJ 1440 1290
-preplace netloc eisv_core_wrapper_flt_1_dmem_ren_o 1 0 5 40 1420 NJ 1420 NJ 1420 1310 1620 1860
-preplace netloc eisv_core_wrapper_flt_1_dmem_wdata_o 1 1 4 390 780 NJ 780 1340 1630 1880
-preplace netloc eisv_core_wrapper_flt_1_dmem_wen_o 1 0 5 30 1430 NJ 1430 NJ 1430 1350 1650 1850J
-preplace netloc eisv_core_wrapper_flt_1_imem_addr_o 1 0 5 20 830 NJ 830 NJ 830 1410 1600 1820
-preplace netloc eisv_core_wrapper_flt_1_imem_ren_o 1 0 4 40 390 310J 400 NJ 400 1300
+preplace netloc dmem_interface_0_web_o 1 1 1 340 690n
+preplace netloc dual_clock_bram_0_douta 1 2 3 900 140 NJ 140 1770
+preplace netloc dual_clock_bram_0_doutb 1 2 3 870 1470 1350J 1580 N
+preplace netloc dual_clock_bram_1_douta 1 2 3 NJ 570 NJ 570 1890
+preplace netloc dual_clock_bram_1_doutb 1 2 3 850 1480 1340J 1610 1880
+preplace netloc eisv_core_wrapper_flt_1_dmem_addr_o 1 0 5 20 1460 NJ 1460 NJ 1460 1330 1600 N
+preplace netloc eisv_core_wrapper_flt_1_dmem_byte_enable_o 1 0 4 40 1430 NJ 1430 NJ 1430 1310
+preplace netloc eisv_core_wrapper_flt_1_dmem_ren_o 1 0 5 10 1820 NJ 1820 NJ 1820 1330 1650 1850
+preplace netloc eisv_core_wrapper_flt_1_dmem_wdata_o 1 1 4 350 1800 NJ 1800 1340 1620 N
+preplace netloc eisv_core_wrapper_flt_1_dmem_wen_o 1 0 5 30 1810 NJ 1810 NJ 1810 1350 1660 1820J
+preplace netloc eisv_core_wrapper_flt_1_imem_addr_o 1 0 5 0 1440 NJ 1440 NJ 1440 1450 1570 1850
+preplace netloc eisv_core_wrapper_flt_1_imem_ren_o 1 0 4 40 390 310J 400 NJ 400 1320
 preplace netloc ilconstant_0_dout 1 1 1 320 280n
-preplace netloc ilconstant_1_dout 1 2 1 890 1610n
-preplace netloc imem_interface_0_en_o 1 1 1 360 310n
+preplace netloc ilconstant_1_dout 1 2 1 870 1610n
+preplace netloc imem_interface_0_en_o 1 1 1 330 310n
 preplace netloc imem_interface_0_web_o 1 1 1 310 330n
-preplace netloc processing_system7_0_FCLK_CLK0 1 1 4 420 1160 880 1410 1430 1580 1800
-preplace netloc processing_system7_0_FCLK_RESET0_N 1 1 2 370 1150 840
-preplace netloc reset_top_0_active_ff_dbg 1 4 1 1840 1480n
+preplace netloc processing_system7_0_FCLK_CLK0 1 1 4 420 1150 880 1410 1410 1590 1840
+preplace netloc processing_system7_0_FCLK_RESET0_N 1 1 2 370 1160 840
+preplace netloc reset_top_0_active_ff_dbg 1 4 1 1830 1480n
 preplace netloc reset_top_0_done_ff_dbg 1 4 1 1810 1500n
-preplace netloc reset_top_0_rst_o 1 2 3 890 1470 1400J 1570 1780
-preplace netloc rst_ps7_0_100M_peripheral_aresetn 1 2 2 890 1450 1390
+preplace netloc reset_top_0_rst_o 1 2 3 890 1790 1360J 1630 1800
+preplace netloc rst_ps7_0_100M_peripheral_aresetn 1 2 2 900 1420 1420
 preplace netloc scan_chain_top_0_active_ff_dbg 1 4 1 1880 1760n
-preplace netloc scan_chain_top_0_done_ff_dbg 1 4 1 1830 1740n
-preplace netloc scan_chain_top_0_scan_chain_o 1 2 3 860 1800 1450 1670 1770
-preplace netloc xlconstant_0_dout 1 1 1 360J 210n
+preplace netloc scan_chain_top_0_done_ff_dbg 1 4 1 1870 1740n
+preplace netloc scan_chain_top_0_scan_chain_o 1 2 3 910 1830 1450 1670 1790
+preplace netloc xlconstant_0_dout 1 1 1 330J 210n
 preplace netloc xlslice_0_Dout 1 4 1 1900 1720n
 preplace netloc xlslice_1_Dout 1 1 1 300J 240n
 preplace netloc xlslice_2_Dout 1 1 1 330J 590n
 preplace netloc xlslice_3_Dout 1 1 1 300J 110n
 preplace netloc xlslice_4_Dout 1 1 1 300J 470n
-preplace netloc axi_interconnect_0_M00_AXI 1 3 1 1370 990n
+preplace netloc axi_interconnect_0_M00_AXI 1 3 1 1340 990n
 preplace netloc axi_interconnect_0_M01_AXI 1 3 1 1330 250n
-preplace netloc axi_interconnect_0_M02_AXI 1 3 1 1400 760n
-preplace netloc axi_interconnect_0_M03_AXI 1 3 1 1400 1170n
+preplace netloc axi_interconnect_0_M02_AXI 1 3 1 1350 760n
+preplace netloc axi_interconnect_0_M03_AXI 1 3 1 1350 1170n
 preplace netloc axi_interconnect_0_M04_AXI 1 3 1 1370 1190n
-preplace netloc axi_interconnect_0_M05_AXI 1 3 1 1420 1210n
-preplace netloc axi_interconnect_0_M06_AXI 1 3 1 1440 1130n
-preplace netloc processing_system7_0_DDR 1 2 4 NJ 910 NJ 910 NJ 910 2100J
+preplace netloc axi_interconnect_0_M05_AXI 1 3 1 1440 1210n
+preplace netloc axi_interconnect_0_M06_AXI 1 3 1 1360 1130n
+preplace netloc processing_system7_0_DDR 1 2 4 NJ 910 NJ 910 1870J 900 NJ
 preplace netloc processing_system7_0_FIXED_IO 1 2 4 NJ 930 NJ 930 NJ 930 NJ
 preplace netloc processing_system7_0_M_AXI_GP0 1 2 1 N 990
-levelinfo -pg 1 0 170 630 1090 1610 2000 2120
-pagesize -pg 1 -db -bbox -sgen 0 0 2230 1950
+levelinfo -pg 1 -20 170 630 1110 1610 2000 2120
+pagesize -pg 1 -db -bbox -sgen -20 0 2230 1950
 "
 }
 {

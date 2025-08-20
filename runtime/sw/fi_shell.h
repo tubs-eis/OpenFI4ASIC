@@ -144,6 +144,17 @@ void fi_shell_set_total_cycles(fi_shell_t* fi_shell) {
     fi_runtime_set_total_cycles(fi_shell->fi_runtime, total_cycles);
 }
 
+void fi_shell_set_timeout_cycles(fi_shell_t* fi_shell) {
+    char* arg_str;
+
+    if (!fi_shell_next_arg(fi_shell, &arg_str)) {
+        printf("Missing required argument 'timeout_cycles' for set_timeout_cycles!\n");
+    }
+    int timeout_cycles = atoi(arg_str);
+
+    fi_runtime_set_timeout_cycles(fi_shell->fi_runtime, timeout_cycles);
+}
+
 void fi_shell_set_result(fi_shell_t* fi_shell) {
     char* arg_str;
 
@@ -218,7 +229,7 @@ void fi_shell_ff_fi_run(fi_shell_t* fi_shell) {
         for (int err_cycl = start_cycle; err_cycl < end_cycle; err_cycl++) {
             fault_run_result_t result = fi_runtime_ff_fi_run(fi_shell->fi_runtime, ff, err_cycl);
 
-        	putc('0' + ((result.control_flow_violation << 0) | (result.data_flow_violation << 1) | (result.wrong_result << 2)), stdout);
+               putc(encode_result(&result), stdout);
         }
         putc('\n', stdout);
     }
@@ -251,7 +262,7 @@ void fi_shell_mem_fi_run(fi_shell_t* fi_shell, memory_t* mem) {
         for (int err_cycl = start_cycle; err_cycl < end_cycle; err_cycl++) {
             fault_run_result_t result = fi_runtime_mem_fi_run(fi_shell->fi_runtime, mem, bit, err_cycl);
 
-            putc('0' + ((result.control_flow_violation << 0) | (result.data_flow_violation << 1) | (result.wrong_result << 2)), stdout);
+            putc(encode_result(&result), stdout);
         }
         putc('\n', stdout);
     }
@@ -278,6 +289,7 @@ fi_shell_command_t COMMANDS[] = {
     { .command_str = "dump_imem", .command_function = &fi_shell_dump_imem },
     { .command_str = "print_pc", .command_function = &fi_shell_print_pc },
     { .command_str = "set_total_cycles", .command_function = &fi_shell_set_total_cycles },
+    { .command_str = "set_timeout_cycles", .command_function = &fi_shell_set_timeout_cycles },
     { .command_str = "set_result", .command_function = &fi_shell_set_result },
     { .command_str = "reference_run", .command_function = &fi_shell_reference_run },
     { .command_str = "ff_fi_run", .command_function = &fi_shell_ff_fi_run },

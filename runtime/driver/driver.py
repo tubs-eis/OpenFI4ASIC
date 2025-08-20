@@ -44,6 +44,12 @@ def parse_args() -> argparse.Namespace:
     )
 
     parser.add_argument(
+        "--timeout-cycles",
+        help="Number of cycles after which to timeout, if done was not set",
+        type=int,
+    )
+
+    parser.add_argument(
         "--result-start",
         help="Decimal word address where the result starts",
         type=int,
@@ -145,6 +151,10 @@ def main() -> None:
     with FIRuntimeConnection(args.device, args.baud) as fi_runtime:
         fi_runtime.upload_program(load_bin_file(args.program))
         print(fi_runtime.send_command(f"set_total_cycles {args.total_cycles}\n"))
+        if args.timeout_cycles is not None:
+            print(
+                fi_runtime.send_command(f"set_timeout_cycles {args.timeout_cycles}\n")
+            )
         print(
             fi_runtime.send_command(
                 f"set_result {args.result_start} {args.result_length}\n"

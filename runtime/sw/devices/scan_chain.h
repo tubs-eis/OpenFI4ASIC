@@ -18,7 +18,7 @@ typedef struct {
 
 static inline void scan_chain_flip_bit(scan_chain_t* scan_chain, uint32_t depth, uint32_t bit) {
     scan_chain_set_input(scan_chain->scan_chain_phys, 1 << bit);
-    clk_gate_run_for_n_cycles(scan_chain->clk_gate_phys, depth+1);
+    clk_gate_run_for_n_cycles_blocking(scan_chain->clk_gate_phys, depth+1);
 }
 
 #endif

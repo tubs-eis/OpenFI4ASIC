@@ -31,15 +31,30 @@ typedef struct {
     reset_phys_t* reset;
 
     uint32_t total_cycles;
+    uint32_t timeout_cycles;
 
     bool imem_dirty;
 } fi_runtime_t;
 
 typedef struct {
     int control_flow_violation;
-    int data_flow_violation;
     int wrong_result;
+    int timeout;
+    int done;
 } fault_run_result_t;
+
+char encode_hex_digit(int i) {
+    return i <= 9 ? '0' + i : 'A' + (i - 10);
+}
+
+char encode_result(fault_run_result_t* result) {
+    return encode_hex_digit(
+          result->control_flow_violation << 0
+        | result->wrong_result << 1
+        | result->timeout << 2
+        | result->done << 3
+    );
+}
 
 static inline void fi_runtime_new(fi_runtime_t* fi_runtime, memory_t imem, memory_t dmem, clk_gate_phys_t* main_clk_gate, scan_chain_t scan_chain, pc_monitor_phys_t* pc_monitor, reset_phys_t* reset) {
     fi_runtime->program = NULL;
@@ -63,6 +78,7 @@ static inline void fi_runtime_new(fi_runtime_t* fi_runtime, memory_t imem, memor
     fi_runtime->reset = reset;
 
     fi_runtime->total_cycles = 0;
+    fi_runtime->timeout_cycles = 0;
 
     fi_runtime->imem_dirty = false;
 }
@@ -79,6 +95,10 @@ static inline void fi_runtime_set_total_cycles(fi_runtime_t* fi_runtime, uint32_
     fi_runtime->total_cycles = total_cycles;
 }
 
+static inline void fi_runtime_set_timeout_cycles(fi_runtime_t* fi_runtime, uint32_t timeout_cycles) {
+    fi_runtime->timeout_cycles = timeout_cycles;
+}
+
 static inline void fi_runtime_set_result_addr_length(fi_runtime_t* fi_runtime, uint32_t result_addr, uint32_t result_length) {
     fi_runtime->result_addr = result_addr;
     fi_runtime->result_length = result_length;
@@ -86,7 +106,7 @@ static inline void fi_runtime_set_result_addr_length(fi_runtime_t* fi_runtime, u
 
 static inline void fi_runtime_reset(fi_runtime_t* fi_runtime) {
     reset_write(fi_runtime->reset, RESET_ACTIVE);
-    clk_gate_run_for_n_cycles(fi_runtime->main_clk_gate, 3); // For some reason we need three cycles here?
+    clk_gate_run_for_n_cycles_blocking(fi_runtime->main_clk_gate, 3); // For some reason we need three cycles here?
     reset_write(fi_runtime->reset, RESET_ACTIVE);
     memory_fill(&fi_runtime->dmem, 0, 0, fi_runtime->dmem.size / 4);
 
@@ -96,21 +116,20 @@ static inline void fi_runtime_reset(fi_runtime_t* fi_runtime) {
         fi_runtime->imem_dirty = false;
     }
 
-    clk_gate_run_for_n_cycles(fi_runtime->scan_chain.clk_gate_phys, 1);
+    clk_gate_run_for_n_cycles_blocking(fi_runtime->scan_chain.clk_gate_phys, 1);
 }
 
 static inline void fi_runtime_reference_run(fi_runtime_t* fi_runtime) {
     fi_runtime_reset(fi_runtime);
-    clk_gate_run_for_n_cycles(fi_runtime->main_clk_gate, fi_runtime->total_cycles);
+    clk_gate_run_for_n_cycles_blocking(fi_runtime->main_clk_gate, fi_runtime->total_cycles);
 
     memory_copy_to(&fi_runtime->dmem, fi_runtime->dmem_reference, 0, fi_runtime->dmem.size / 4);
     fi_runtime->pc_reference = pc_monitor_read_pc(fi_runtime->pc_monitor);
 }
 
-static inline fault_run_result_t fi_runtime_check_result(fi_runtime_t* fi_runtime) {
+static inline fault_run_result_t fi_runtime_check_result(fi_runtime_t* fi_runtime, bool timeout) {
     fault_run_result_t rv;
     rv.control_flow_violation = (fi_runtime->pc_reference != pc_monitor_read_pc(fi_runtime->pc_monitor));
-    rv.data_flow_violation = 0; // !memory_compare(&fi_runtime->dmem, fi_runtime->dmem_reference, 0, RAM_SIZE / 4);
 
     bool correct_result = true;
     for (uint32_t offset = 0; offset < fi_runtime->result_length; offset++) {
@@ -121,32 +140,86 @@ static inline fault_run_result_t fi_runtime_check_result(fi_runtime_t* fi_runtim
         }
     }
     rv.wrong_result = !correct_result;
+    rv.timeout = timeout;
+    rv.done = memory_read(&fi_runtime->dmem, 0) != 0;
     return rv;
 }
 
 static inline fault_run_result_t fi_runtime_ff_fi_run(fi_runtime_t* fi_runtime, uint32_t fault_ff, uint32_t fault_cycle) {
     fi_runtime_reset(fi_runtime);
-    clk_gate_run_for_n_cycles(fi_runtime->main_clk_gate, fault_cycle+1);
+    clk_gate_run_for_n_cycles_blocking(fi_runtime->main_clk_gate, fault_cycle+1);
 
     scan_chain_flip_bit(&fi_runtime->scan_chain, fault_ff, 0);
 
-    clk_gate_run_for_n_cycles(fi_runtime->main_clk_gate, fi_runtime->total_cycles - fault_cycle-1);
+    bool timeout;
+    if (fi_runtime->timeout_cycles == 0) { // No timeout use normal behaviour
+        clk_gate_run_for_n_cycles_blocking(fi_runtime->main_clk_gate, fi_runtime->total_cycles - fault_cycle-1);
+        timeout = false; // Never indicate a timeout if not enabled
+    } else {
+        // There was a timeout specified run non-blocking for timeout cycles,
+        //  but stop early if done gets set
+        clk_gate_run_for_n_cycles_non_blocking(fi_runtime->main_clk_gate, fi_runtime->timeout_cycles - fault_cycle - 1);
+        int counter = 0;
+        while (1) {
+            if (memory_read(&fi_runtime->dmem, 0) != 0) {
+                // Done was set
+                timeout = false;
+                break;
+            }
+            counter += 1;
+            if (counter % 128 == 0) {
+                // Periodically check the scan_clk gate in case we reached the timeout
+                if (fi_runtime->scan_chain.clk_gate_phys->callback != 0) {
+                    // Possibly without setting done
+                    timeout = true;
+                    break;
+                }
+            }
+        }
 
-    return fi_runtime_check_result(fi_runtime);
+        fi_runtime->scan_chain.clk_gate_phys->enable = 0;
+    }
+
+    return fi_runtime_check_result(fi_runtime, timeout);
 }
 
 static inline fault_run_result_t fi_runtime_mem_fi_run(fi_runtime_t* fi_runtime, memory_t* mem, uint64_t bit, uint32_t fault_cycle) {
     fi_runtime_reset(fi_runtime);
-    clk_gate_run_for_n_cycles(fi_runtime->main_clk_gate, fault_cycle+1);
+    clk_gate_run_for_n_cycles_blocking(fi_runtime->main_clk_gate, fault_cycle+1);
 
     memory_flip_bit(mem, bit);
     if (mem == &fi_runtime->imem) {
         fi_runtime->imem_dirty = true;
     }
 
-    clk_gate_run_for_n_cycles(fi_runtime->main_clk_gate, fi_runtime->total_cycles - fault_cycle-1);
+    bool timeout;
+    if (fi_runtime->timeout_cycles == 0) { // No timeout use normal behaviour
+        clk_gate_run_for_n_cycles_blocking(fi_runtime->main_clk_gate, fi_runtime->total_cycles - fault_cycle-1);
+        timeout = false; // Never indicate a timeout if not enabled
+    } else {
+        // There was a timeout specified run non-blocking for timeout cycles,
+        //  but stop early if done gets set
+        clk_gate_run_for_n_cycles_non_blocking(fi_runtime->main_clk_gate, fi_runtime->timeout_cycles - fault_cycle - 1);
+        int counter = 0;
+        while (1) {
+            if (memory_read(&fi_runtime->dmem, 0) != 0) {
+                // Done was set
+                timeout = false;
+                break;
+            }
+            counter += 1;
+            if (counter % 128 == 0) {
+                // Periodically check the scan_clk gate in case we reached the timeout
+                if (fi_runtime->scan_chain.clk_gate_phys->callback != 0) {
+                    // Possibly without setting done
+                    timeout = true;
+                    break;
+                }
+            }
+        }
+    }
 
-    return fi_runtime_check_result(fi_runtime);
+    return fi_runtime_check_result(fi_runtime, timeout);
 }
 
 static inline fault_run_result_t fi_runtime_imem_fi_run(fi_runtime_t* fi_runtime, uint64_t bit, uint32_t fault_cycle) {

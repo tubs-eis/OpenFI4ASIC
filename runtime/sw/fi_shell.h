@@ -171,6 +171,17 @@ void fi_shell_set_result(fi_shell_t* fi_shell) {
     fi_runtime_set_result_addr_length(fi_shell->fi_runtime, result_addr, result_length);
 }
 
+void fi_shell_set_done_addr(fi_shell_t* fi_shell) {
+    char* arg_str;
+
+    if (!fi_shell_next_arg(fi_shell, &arg_str)) {
+        printf("Missing required argument 'done_addr' for set)\n");
+    }
+    int done_addr = atoi(arg_str);
+
+    fi_runtime_set_done_addr(fi_shell->fi_runtime, done_addr);
+}
+
 void fi_shell_dump_memory(fi_shell_t* fi_shell, memory_t* memory) {
     char* arg_str;
     int start_addr = 0;
@@ -291,6 +302,7 @@ fi_shell_command_t COMMANDS[] = {
     { .command_str = "set_total_cycles", .command_function = &fi_shell_set_total_cycles },
     { .command_str = "set_timeout_cycles", .command_function = &fi_shell_set_timeout_cycles },
     { .command_str = "set_result", .command_function = &fi_shell_set_result },
+    { .command_str = "set_done_addr", .command_function = &fi_shell_set_done_addr },
     { .command_str = "reference_run", .command_function = &fi_shell_reference_run },
     { .command_str = "ff_fi_run", .command_function = &fi_shell_ff_fi_run },
     { .command_str = "imem_fi_run", .command_function = &fi_shell_imem_fi_run },

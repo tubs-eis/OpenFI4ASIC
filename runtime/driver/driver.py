@@ -60,6 +60,8 @@ def parse_args() -> argparse.Namespace:
         "--result-length", help="Length of the result in words", type=int, required=True
     )
 
+    parser.add_argument("--done-addr", help="Word address of the done flag", type=int)
+
     parser.add_argument("--outfile", "-o", help="Output file path", required=True)
 
     parser.add_argument(
@@ -155,6 +157,8 @@ def main() -> None:
             print(
                 fi_runtime.send_command(f"set_timeout_cycles {args.timeout_cycles}\n")
             )
+        if args.done_addr is not None:
+            print(fi_runtime.send_command(f"set_done_addr {args.done_addr}\n"))
         print(
             fi_runtime.send_command(
                 f"set_result {args.result_start} {args.result_length}\n"

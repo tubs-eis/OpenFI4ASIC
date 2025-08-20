@@ -19,6 +19,8 @@ typedef struct {
     uint32_t result_addr;
     uint32_t result_length;
 
+    uint32_t done_addr;
+
     memory_t imem;
     memory_t dmem;
 
@@ -69,6 +71,8 @@ static inline void fi_runtime_new(fi_runtime_t* fi_runtime, memory_t imem, memor
     fi_runtime->result_addr = 0;
     fi_runtime->result_length = 1;
 
+    fi_runtime->done_addr = 0;
+
     fi_runtime->main_clk_gate = main_clk_gate;
 
     fi_runtime->scan_chain = scan_chain;
@@ -102,6 +106,10 @@ static inline void fi_runtime_set_timeout_cycles(fi_runtime_t* fi_runtime, uint3
 static inline void fi_runtime_set_result_addr_length(fi_runtime_t* fi_runtime, uint32_t result_addr, uint32_t result_length) {
     fi_runtime->result_addr = result_addr;
     fi_runtime->result_length = result_length;
+}
+
+static inline void fi_runtime_set_done_addr(fi_runtime_t* fi_runtime, uint32_t done_addr) {
+    fi_runtime->done_addr = done_addr;
 }
 
 static inline void fi_runtime_reset(fi_runtime_t* fi_runtime) {
@@ -141,7 +149,7 @@ static inline fault_run_result_t fi_runtime_check_result(fi_runtime_t* fi_runtim
     }
     rv.wrong_result = !correct_result;
     rv.timeout = timeout;
-    rv.done = memory_read(&fi_runtime->dmem, 0) != 0;
+    rv.done = memory_read(&fi_runtime->dmem, fi_runtime->done_addr) != 0;
     return rv;
 }
 
@@ -161,7 +169,7 @@ static inline fault_run_result_t fi_runtime_ff_fi_run(fi_runtime_t* fi_runtime, 
         clk_gate_run_for_n_cycles_non_blocking(fi_runtime->main_clk_gate, fi_runtime->timeout_cycles - fault_cycle - 1);
         int counter = 0;
         while (1) {
-            if (memory_read(&fi_runtime->dmem, 0) != 0) {
+            if (memory_read(&fi_runtime->dmem, fi_runtime->done_addr) != 0) {
                 // Done was set
                 timeout = false;
                 break;
@@ -202,7 +210,7 @@ static inline fault_run_result_t fi_runtime_mem_fi_run(fi_runtime_t* fi_runtime,
         clk_gate_run_for_n_cycles_non_blocking(fi_runtime->main_clk_gate, fi_runtime->timeout_cycles - fault_cycle - 1);
         int counter = 0;
         while (1) {
-            if (memory_read(&fi_runtime->dmem, 0) != 0) {
+            if (memory_read(&fi_runtime->dmem, fi_runtime->done_addr) != 0) {
                 // Done was set
                 timeout = false;
                 break;

@@ -166,44 +166,43 @@ def main() -> None:
         )
         print(fi_runtime.send_command("reference_run\n"))
 
-        fi_log = ""
+        with open(args.outfile, "w") as fi_log:
 
-        if args.flip_flops:
-            for ff_start, ff_end in args.flip_flops:
-                for cycle_start, cycle_end in args.cycles:
-                    print(
-                        f"Injecting FFs {ff_start} - {ff_end} in cycles {cycle_start} - {cycle_end}"
-                    )
-                    command = f"ff_fi_run {ff_start} {ff_end} {cycle_start} {cycle_end}"
-                    fi_log += f"# {command}\n"
-                    fi_log += fi_runtime.send_command(f"{command}\n") + "\n"
+            if args.flip_flops:
+                for ff_start, ff_end in args.flip_flops:
+                    for cycle_start, cycle_end in args.cycles:
+                        print(
+                            f"Injecting FFs {ff_start} - {ff_end} in cycles {cycle_start} - {cycle_end}"
+                        )
+                        command = f"ff_fi_run {ff_start} {ff_end} {cycle_start} {cycle_end}"
+                        fi_log.write(f"# {command}\n")
+                        fi_log.write(fi_runtime.send_command(f"{command}\n") + "\n")
 
-        if args.imem_bits:
-            for imem_start, imem_end in args.imem_bits:
-                for cycle_start, cycle_end in args.cycles:
-                    print(
-                        f"Injecting IMEM bit {imem_start} - {imem_end} in cycles {cycle_start} - {cycle_end}"
-                    )
-                    command = (
-                        f"imem_fi_run {imem_start} {imem_end} {cycle_start} {cycle_end}"
-                    )
-                    fi_log += f"# {command}\n"
-                    fi_log += fi_runtime.send_command(f"{command}\n") + "\n"
+            if args.imem_bits:
+                for imem_start, imem_end in args.imem_bits:
+                    for cycle_start, cycle_end in args.cycles:
+                        print(
+                            f"Injecting IMEM bit {imem_start} - {imem_end} in cycles {cycle_start} - {cycle_end}"
+                        )
+                        command = (
+                            f"imem_fi_run {imem_start} {imem_end} {cycle_start} {cycle_end}"
+                        )
+                        fi_log.write(f"# {command}\n")
+                        fi_log.write(fi_runtime.send_command(f"{command}\n") + "\n")
 
-        if args.dmem_bits:
-            for dmem_start, dmem_end in args.dmem_bits:
-                for cycle_start, cycle_end in args.cycles:
-                    print(
-                        f"Injecting DMEM bit {dmem_start} - {dmem_end} in cycles {cycle_start} - {cycle_end}"
-                    )
-                    command = (
-                        f"dmem_fi_run {dmem_start} {dmem_end} {cycle_start} {cycle_end}"
-                    )
-                    fi_log += f"# {command}\n"
-                    fi_log += fi_runtime.send_command(f"{command}\n") + "\n"
+            if args.dmem_bits:
+                for dmem_start, dmem_end in args.dmem_bits:
+                    for cycle_start, cycle_end in args.cycles:
+                        print(
+                            f"Injecting DMEM bit {dmem_start} - {dmem_end} in cycles {cycle_start} - {cycle_end}"
+                        )
+                        command = (
+                            f"dmem_fi_run {dmem_start} {dmem_end} {cycle_start} {cycle_end}"
+                        )
+                        fi_log.write(f"# {command}\n")
+                        fi_log.write(fi_runtime.send_command(f"{command}\n") + "\n")
 
-        with open(args.outfile, "w") as f:
-            f.write(fi_log)
+
 
 
 if __name__ == "__main__":

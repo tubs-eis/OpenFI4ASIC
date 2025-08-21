@@ -5,6 +5,9 @@ use ieee.numeric_std.all;
 library fault_injection;
 
 entity openfi4asic_pl is
+    generic (
+        MEM_ADDR_WORDS_LOG2 : integer := 11
+    )
     port (
         -- Main clock gate AXI
         main_clk_gate_S_AXI_ACLK    : in std_ulogic;
@@ -122,7 +125,7 @@ entity openfi4asic_pl is
         pc_monitor_S_AXI_RREADY  : in  std_ulogic;
 
         -- BRAM 1 (IMEM) AXI BRAM CTRL Port
-        imem_bram_addr_a              : in  std_ulogic_vector(12 downto 0);
+        imem_bram_addr_a              : in  std_ulogic_vector(MEM_ADDR_WORDS_LOG2 + 2 - 1 downto 0);
         imem_bram_clk_a               : in  std_ulogic;
         imem_bram_wrdata_a            : in  std_ulogic_vector(31 downto 0);
         imem_bram_rddata_a            : out std_ulogic_vector(31 downto 0);
@@ -131,7 +134,7 @@ entity openfi4asic_pl is
         imem_bram_we_a                : in  std_ulogic_vector(3 downto 0);
 
         -- BRAM 2 (DMEM) AXI BRAM CTRL Port
-        dmem_bram_addr_a              : in  std_ulogic_vector(12 downto 0);
+        dmem_bram_addr_a              : in  std_ulogic_vector(MEM_ADDR_WORDS_LOG2 + 2 - 1 downto 0);
         dmem_bram_clk_a               : in  std_ulogic;
         dmem_bram_wrdata_a            : in  std_ulogic_vector(31 downto 0);
         dmem_bram_rddata_a            : out std_ulogic_vector(31 downto 0);
@@ -164,7 +167,7 @@ architecture rtl of openfi4asic_pl is
     attribute X_INTERFACE_INFO of dmem_bram_we_a: signal is "xilinx.com:interface:bram:1.0 DMEM_PORTA WE";
 
     -- Memory port signals
-    signal imem_addra : std_ulogic_vector(10 downto 0);
+    signal imem_addra : std_ulogic_vector(MEM_ADDR_WORDS_LOG2 - 1 downto 0);
     signal imem_clka  : std_ulogic;
     signal imem_rsta  : std_ulogic;
     signal imem_dina  : std_ulogic_vector(31 downto 0);
@@ -172,7 +175,7 @@ architecture rtl of openfi4asic_pl is
     signal imem_ena   : std_ulogic;
     signal imem_wea   : std_ulogic_vector(3 downto 0);
 
-    signal imem_addrb : std_ulogic_vector(10 downto 0);
+    signal imem_addrb : std_ulogic_vector(MEM_ADDR_WORDS_LOG2 - 1 downto 0);
     signal imem_clkb  : std_ulogic;
     signal imem_rstb  : std_ulogic;
     signal imem_dinb  : std_ulogic_vector(31 downto 0);
@@ -180,7 +183,7 @@ architecture rtl of openfi4asic_pl is
     signal imem_enb   : std_ulogic;
     signal imem_web   : std_ulogic_vector(3 downto 0);
 
-    signal dmem_addra : std_ulogic_vector(10 downto 0);
+    signal dmem_addra : std_ulogic_vector(MEM_ADDR_WORDS_LOG2 - 1 downto 0);
     signal dmem_clka  : std_ulogic;
     signal dmem_rsta  : std_ulogic;
     signal dmem_dina  : std_ulogic_vector(31 downto 0);
@@ -188,7 +191,7 @@ architecture rtl of openfi4asic_pl is
     signal dmem_ena   : std_ulogic;
     signal dmem_wea   : std_ulogic_vector(3 downto 0);
 
-    signal dmem_addrb : std_ulogic_vector(10 downto 0);
+    signal dmem_addrb : std_ulogic_vector(MEM_ADDR_WORDS_LOG2 - 1 downto 0);
     signal dmem_clkb  : std_ulogic;
     signal dmem_rstb  : std_ulogic;
     signal dmem_dinb  : std_ulogic_vector(31 downto 0);
@@ -272,7 +275,7 @@ begin
 
     imem_inst: entity fault_injection.dual_clock_bram
         generic map (
-            ADDR_WIDTH => 11,
+            ADDR_WIDTH => MEM_ADDR_WORDS_LOG2,
             DATA_BYTES => 4
         )
         port map (
@@ -295,7 +298,7 @@ begin
 
     dmem_inst: entity fault_injection.dual_clock_bram
         generic map (
-            ADDR_WIDTH => 11,
+            ADDR_WIDTH => MEM_ADDR_WORDS_LOG2,
             DATA_BYTES => 4
         )
         port map (

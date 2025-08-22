@@ -82,6 +82,10 @@ def parse_args() -> argparse.Namespace:
         "--cycles", help="Which cycles to target", required=True, type=parse_number_list
     )
 
+    parser.add_argument(
+        "--copy_dmem", help="Copy program to dmem for access through dmem bus", type=bool
+    )
+
     args = parser.parse_args()
 
     if args.flip_flops is None and args.imem_bits is None and args.dmem_bits is None:
@@ -141,6 +145,12 @@ class FIRuntimeConnection:
 
         self.send_command(command)
 
+    def upload_dmem(self, dmem: bytes):
+        command = f"upload_dmem {len(dmem)}\n"
+        command += dmem.hex()
+
+        self.send_command(command)
+
 
 def load_bin_file(path: str) -> bytes:
     with open(path, "rb") as f:
@@ -164,8 +174,11 @@ def main() -> None:
                 f"set_result {args.result_start} {args.result_length}\n"
             )
         )
+        if args.copy_dmem:
+            fi_runtime.upload_dmem(load_bin_file(args.program))
         print(fi_runtime.send_command("reference_run\n"))
-
+        print(fi_runtime.send_command(f"dump_dmem 0 {args.result_start + args.result_length}\n"))
+        print(fi_runtime.send_command("print_pc\n"))
         with open(args.outfile, "w") as fi_log:
 
             if args.flip_flops:

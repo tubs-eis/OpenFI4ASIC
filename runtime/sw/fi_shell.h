@@ -31,7 +31,7 @@ void fi_shell_getline(fi_shell_t* fi_shell) {
     while (1) {
         char c = getchar();
         // Special char handling
-        if (c == '\n') { // Line end
+        if (c == '\n' || c == '\r') { // Line end
             putchar(c);
             break;
         }
@@ -109,7 +109,7 @@ void fi_shell_upload_program(fi_shell_t* fi_shell) {
     }
 
     int program_size = atoi(program_size_str);
-    uint8_t* program = malloc(program_size);
+    uint8_t* program = (uint8_t*) malloc(program_size);
 
     char hex_buf[3];
     hex_buf[2] = '\0';
@@ -131,6 +131,38 @@ void fi_shell_upload_program(fi_shell_t* fi_shell) {
     }
 
     fi_runtime_set_program(fi_shell->fi_runtime, (uint32_t*) program, program_size / 4);
+}
+
+void fi_shell_upload_dmem(fi_shell_t* fi_shell) {
+    char* dmem_size_str;
+    if (!fi_shell_next_arg(fi_shell, &dmem_size_str)) {
+        printf("Missing required argument 'dmem size' for upload_dmem!\n");
+        return;
+    }
+
+    int upload_size = atoi(dmem_size_str);
+    uint8_t* dmem = (uint8_t*) calloc(fi_shell->fi_runtime->dmem.size, 1);
+
+    char hex_buf[3];
+    hex_buf[2] = '\0';
+    int bytes_read = 0;
+    int hex_chars_read = 0;
+    while (bytes_read < upload_size) {
+        char c = getchar();
+        if (isalnum((int)c)) {
+            hex_buf[hex_chars_read] = toupper((int)c);
+            hex_chars_read++;
+        }
+
+        if (hex_chars_read == 2) {
+            uint8_t byte = strtol(hex_buf, NULL, 16);
+            dmem[bytes_read] = byte;
+            hex_chars_read = 0;
+            bytes_read++;
+        }
+    }
+
+    fi_runtime_set_uploaded_dmem(fi_shell->fi_runtime, (uint32_t*) dmem);
 }
 
 void fi_shell_set_total_cycles(fi_shell_t* fi_shell) {
@@ -296,6 +328,7 @@ typedef struct {
 fi_shell_command_t COMMANDS[] = {
     { .command_str = "help", .command_function = &fi_shell_help },
     { .command_str = "upload_program", .command_function = &fi_shell_upload_program },
+    { .command_str = "upload_dmem", .command_function = &fi_shell_upload_dmem },
     { .command_str = "dump_dmem", .command_function = &fi_shell_dump_dmem },
     { .command_str = "dump_imem", .command_function = &fi_shell_dump_imem },
     { .command_str = "print_pc", .command_function = &fi_shell_print_pc },

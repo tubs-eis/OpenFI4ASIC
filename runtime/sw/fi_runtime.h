@@ -16,6 +16,8 @@ typedef struct {
     uint32_t pc_reference;
     uint32_t* dmem_reference;
 
+    uint32_t* dmem_uploaded;
+
     uint32_t result_addr;
     uint32_t result_length;
 
@@ -67,6 +69,7 @@ static inline void fi_runtime_new(fi_runtime_t* fi_runtime, memory_t imem, memor
 
     fi_runtime->pc_reference = 0;
     fi_runtime->dmem_reference = malloc(fi_runtime->dmem.size);
+    fi_runtime->dmem_uploaded = calloc(fi_runtime->dmem.size, 1);
 
     fi_runtime->result_addr = 0;
     fi_runtime->result_length = 1;
@@ -95,6 +98,12 @@ static inline void fi_runtime_set_program(fi_runtime_t* fi_runtime, uint32_t* pr
     memory_copy_from(&fi_runtime->imem, fi_runtime->program, 0, fi_runtime->program_size);
 }
 
+static inline void fi_runtime_set_uploaded_dmem(fi_runtime_t* fi_runtime, uint32_t* dmem) {
+    fi_runtime->dmem_uploaded = dmem;
+    memory_copy_from(&fi_runtime->dmem, fi_runtime->dmem_uploaded, 0, fi_runtime->dmem.size);
+}
+
+
 static inline void fi_runtime_set_total_cycles(fi_runtime_t* fi_runtime, uint32_t total_cycles) {
     fi_runtime->total_cycles = total_cycles;
 }
@@ -116,7 +125,8 @@ static inline void fi_runtime_reset(fi_runtime_t* fi_runtime) {
     reset_write(fi_runtime->reset, RESET_ACTIVE);
     clk_gate_run_for_n_cycles_blocking(fi_runtime->main_clk_gate, 3); // For some reason we need three cycles here?
     reset_write(fi_runtime->reset, RESET_ACTIVE);
-    memory_fill(&fi_runtime->dmem, 0, 0, fi_runtime->dmem.size / 4);
+    memory_copy_from(&fi_runtime->dmem, fi_runtime->dmem_uploaded, 0, fi_runtime->dmem.size / 4);
+
 
     if (fi_runtime->imem_dirty) {
         memory_fill(&fi_runtime->imem, 0, 0, RAM_SIZE / 4);

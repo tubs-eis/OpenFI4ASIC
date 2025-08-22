@@ -6,7 +6,9 @@ library fault_injection;
 
 entity openfi4asic_pl is
     generic (
-        MEM_ADDR_WORDS_LOG2 : integer := 11
+        MEM_ADDR_WORDS_LOG2 : integer := 11;
+        ASYNC_IMEM : boolean := false;
+        ASYNC_DMEM : boolean := false
     );
     port (
         -- Main clock gate AXI
@@ -218,7 +220,11 @@ architecture rtl of openfi4asic_pl is
 
     signal core_imem_addr_reg, core_dmem_addr_reg : std_ulogic_vector(31 downto 0);
 
+    signal dmem_ren : std_ulogic;
     signal dmem_wen : std_ulogic;
+    signal imem_ren : std_ulogic;
+
+    signal main_clk_enabled : std_ulogic;
 
 begin
 
@@ -226,7 +232,7 @@ begin
     main_clk_gate_inst: entity fault_injection.clk_gate_top
         port map (
             clk_o         => main_clk,
-            clk_enabled_o => open,
+            clk_enabled_o => main_clk_enabled,
 
             S_AXI_ACLK    => main_clk_gate_S_AXI_ACLK,
             S_AXI_ARESETN => main_clk_gate_S_AXI_ARESETN,
@@ -282,7 +288,8 @@ begin
     imem_inst: entity fault_injection.dual_clock_bram
         generic map (
             ADDR_WIDTH => MEM_ADDR_WORDS_LOG2,
-            DATA_BYTES => 4
+            DATA_BYTES => 4,
+            ASYNC_PORT_B => ASYNC_IMEM
         )
         port map (
             addra => imem_addra,
@@ -305,7 +312,8 @@ begin
     dmem_inst: entity fault_injection.dual_clock_bram
         generic map (
             ADDR_WIDTH => MEM_ADDR_WORDS_LOG2,
-            DATA_BYTES => 4
+            DATA_BYTES => 4,
+            ASYNC_PORT_B => ASYNC_DMEM
         )
         port map (
             addra => dmem_addra,
@@ -418,14 +426,14 @@ begin
 
     imem_interface_inst: entity fault_injection.imem_interface
         port map (
-            ren_i => core_imem_ren,
+            ren_i => imem_ren,
             en_o  => imem_enb,
             web_o => imem_web
         );
 
     dmem_interface_inst: entity fault_injection.dmem_interface
         port map (
-            ren_i => core_dmem_ren,
+            ren_i => dmem_ren,
             wen_i => dmem_wen,
             en_o  => dmem_enb,
             web_i => core_dmem_byte_enable,
@@ -494,9 +502,30 @@ begin
         end if;
     end process;
 
-    core_imem_rdata <= imem_doutb when unsigned(core_imem_addr_reg(31 downto MEM_ADDR_WORDS_LOG2 + 2)) = 0 else (others => '0');
-    core_dmem_rdata <= dmem_doutb when unsigned(core_dmem_addr_reg(31 downto MEM_ADDR_WORDS_LOG2 + 2)) = 0 else (others => '0');
+    gen_dmem_logic_sync : if not ASYNC_DMEM generate
+        core_dmem_rdata <= dmem_doutb when unsigned(core_dmem_addr_reg(31 downto MEM_ADDR_WORDS_LOG2 + 2)) = 0 else (others => '0');
 
-    dmem_wen <= core_dmem_wen when unsigned(core_dmem_addr(31 downto MEM_ADDR_WORDS_LOG2 + 2)) = 0 else '0';
+        dmem_wen <= core_dmem_wen when unsigned(core_dmem_addr(31 downto MEM_ADDR_WORDS_LOG2 + 2)) = 0 else '0';
+        dmem_ren <= core_dmem_ren;
+    end generate;
+
+    gen_dmem_logic_async : if ASYNC_DMEM generate
+        core_dmem_rdata <= dmem_doutb when unsigned(core_dmem_addr(31 downto MEM_ADDR_WORDS_LOG2 + 2)) = 0 else (others => '0');
+
+        dmem_wen <= core_dmem_wen when unsigned(core_dmem_addr(31 downto MEM_ADDR_WORDS_LOG2 + 2)) = 0 and main_clk_enabled = '1' else '0';
+        dmem_ren <= core_dmem_ren and main_clk_enabled;
+    end generate;
+
+    gen_imem_logic_sync : if not ASYNC_IMEM generate
+        core_imem_rdata <= imem_doutb when unsigned(core_imem_addr_reg(31 downto MEM_ADDR_WORDS_LOG2 + 2)) = 0 else (others => '0');
+
+        imem_ren <= core_imem_ren;
+    end generate;
+
+    gen_imem_logic_async : if ASYNC_IMEM generate
+        core_imem_rdata <= imem_doutb when unsigned(core_imem_addr(31 downto MEM_ADDR_WORDS_LOG2 + 2)) = 0 else (others => '0');
+
+        imem_ren <= core_imem_ren and main_clk_enabled;
+    end generate;
 
 end architecture;

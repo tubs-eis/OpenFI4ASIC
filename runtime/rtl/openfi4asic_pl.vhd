@@ -207,12 +207,18 @@ architecture rtl of openfi4asic_pl is
 
     signal core_imem_addr        : std_ulogic_vector(31 downto 0);
     signal core_imem_ren         : std_ulogic;
+    signal core_imem_rdata       : std_ulogic_vector(31 downto 0);
     signal core_dmem_addr        : std_ulogic_vector(31 downto 0);
     signal core_dmem_ren         : std_ulogic;
+    signal core_dmem_rdata       : std_ulogic_vector(31 downto 0);
     signal core_dmem_wen         : std_ulogic;
     signal core_dmem_byte_enable : std_ulogic_vector(3 downto 0);
 
     signal core_scan_in : std_ulogic_vector(0 downto 0);
+
+    signal core_imem_addr_reg, core_dmem_addr_reg : std_ulogic_vector(31 downto 0);
+
+    signal dmem_wen : std_ulogic;
 
 begin
 
@@ -420,7 +426,7 @@ begin
     dmem_interface_inst: entity fault_injection.dmem_interface
         port map (
             ren_i => core_dmem_ren,
-            wen_i => core_dmem_wen,
+            wen_i => dmem_wen,
             en_o  => dmem_enb,
             web_i => core_dmem_byte_enable,
             web_o => dmem_web
@@ -433,13 +439,13 @@ begin
             rst_ni             => core_reset_ni,
             imem_addr_o        => core_imem_addr,
             imem_ren_o         => core_imem_ren,
-            imem_rdata_i       => imem_doutb,
+            imem_rdata_i       => core_imem_rdata,
             imem_ready_i       => '1',
             imem_valid_i       => '1',
             imem_complete_o    => open,
             dmem_addr_o        => core_dmem_addr,
             dmem_ren_o         => core_dmem_ren,
-            dmem_rdata_i       => dmem_doutb,
+            dmem_rdata_i       => core_dmem_rdata,
             dmem_wen_o         => core_dmem_wen,
             dmem_wdata_o       => dmem_dinb,
             dmem_byte_enable_o => core_dmem_byte_enable,
@@ -478,5 +484,19 @@ begin
     dmem_addrb <= core_dmem_addr(dmem_addrb'high + 2 downto dmem_addrb'low + 2);
     dmem_clkb  <= main_clk;
     dmem_rstb  <= '0';
+
+    -- OOB dection
+    address_seq: process (main_clk) is
+    begin
+        if rising_edge(main_clk) then
+            core_imem_addr_reg <= core_imem_addr;
+            core_dmem_addr_reg <= core_dmem_addr;
+        end if;
+    end process;
+
+    core_imem_rdata <= imem_doutb when unsigned(core_imem_addr_reg(31 downto MEM_ADDR_WORDS_LOG2 + 2)) = 0 else (others => '0');
+    core_dmem_rdata <= dmem_doutb when unsigned(core_dmem_addr_reg(31 downto MEM_ADDR_WORDS_LOG2 + 2)) = 0 else (others => '0');
+
+    dmem_wen <= core_dmem_wen when unsigned(core_dmem_addr(31 downto MEM_ADDR_WORDS_LOG2 + 2)) = 0 else '0';
 
 end architecture;

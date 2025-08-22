@@ -7,7 +7,7 @@ library fault_injection;
 entity openfi4asic_pl is
     generic (
         MEM_ADDR_WORDS_LOG2 : integer := 11
-    )
+    );
     port (
         -- Main clock gate AXI
         main_clk_gate_S_AXI_ACLK    : in std_ulogic;

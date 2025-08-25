@@ -4,6 +4,22 @@ if { ![info exists ::env(EISV_FLT_NETLIST)] } {
     exit 1
 }
 
+if { ![info exists ::env(EISV_INFO_FILE)] } {
+    puts "ERROR: EISV_INFO_FILE has to be set to eisv_info file location."
+    exit 1
+}
+
+set fh [open $env(EISV_INFO_FILE) r]
+while {[gets $fh line] >= 0} {
+    if {[regexp {IMEM_DELAY\s*(\d+)} $line match imem_val]} {
+        set imem_async [expr {$imem_val == 0 ? "TRUE" : "FALSE"}]
+    }
+    if {[regexp {DMEM_DELAY\s*(\d+)} $line match dmem_val]} {
+        set dmem_async [expr {$dmem_val == 0 ? "TRUE" : "FALSE"}]
+    }
+}
+close $fh
+
 create_project OpenFI4ASICSystem vivado/OpenFI4ASICSystem -part xc7z020clg484-1
 set_property board_part digilentinc.com:zedboard:part0:1.1 [current_project]
 
@@ -48,6 +64,10 @@ set_property CONFIG.SINGLE_PORT_BRAM {1} [get_bd_cells axi_bram_ctrl_1]
 
 create_bd_cell -type module -reference openfi4asic_pl openfi4asic_pl_0
 
+set_property CONFIG.ASYNC_IMEM $imem_async [get_bd_cells openfi4asic_pl_0]
+set_property CONFIG.ASYNC_DMEM $dmem_async [get_bd_cells openfi4asic_pl_0]
+set_property CONFIG.MEM_ADDR_WORDS_LOG2 {9} [get_bd_cells openfi4asic_pl_0]
+
 connect_bd_intf_net [get_bd_intf_pins axi_bram_ctrl_0/BRAM_PORTA] [get_bd_intf_pins openfi4asic_pl_0/IMEM_PORTA]
 connect_bd_intf_net [get_bd_intf_pins axi_bram_ctrl_1/BRAM_PORTA] [get_bd_intf_pins openfi4asic_pl_0/DMEM_PORTA]
 
@@ -71,6 +91,5 @@ assign_bd_address -offset 0x40004000 -range 4K [get_bd_addr_segs openfi4asic_pl_
 
 save_bd_design "design_1"
 
-# make_wrapper -files [get_files *.bd] -top
-# add_files [get_files **/design_1_wrapper.v]
-# set_property top design_1_wrapper [current_fileset]
+make_wrapper -import -files [get_files design_1.bd] -top
+set_property top design_1_wrapper [current_fileset]

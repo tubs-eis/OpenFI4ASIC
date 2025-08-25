@@ -131,6 +131,7 @@ class FIRuntimeConnection:
             raise Exception()
 
         if not self.ready:
+            self.ser.write(b"\n")
             self.ser.read_until(b">")
             self.ready = True
         self.ser.write(command.encode())
@@ -181,12 +182,14 @@ def main() -> None:
         print(fi_runtime.send_command("reference_run\n"))
 
         # Output PC ref. and Result ref. for validation
+        print("REFERENCE START")
         print(
             fi_runtime.send_command(
                 f"dump_dmem {args.result_start} {args.result_length}\n"
             )
         )
         print(fi_runtime.send_command("print_pc\n"))
+        print("REFERENCE END")
 
         with open(args.outfile, "w") as fi_log:
 

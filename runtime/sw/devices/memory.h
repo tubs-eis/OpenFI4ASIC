@@ -52,7 +52,7 @@ static inline void memory_flip_bit(memory_t* memory, uint64_t bit) {
 
 void memory_print(memory_t* memory, uint32_t start_addr, uint32_t num_words) {
     for (int i = start_addr; i < start_addr + num_words; i++) {
-        printf("%08x: %08lx\n", i*4, memory_read(memory, start_addr + i));
+        printf("%08x: %08lx\n", i*4, memory_read(memory, i));
     }
 }
 

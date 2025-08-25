@@ -83,7 +83,9 @@ def parse_args() -> argparse.Namespace:
     )
 
     parser.add_argument(
-        "--copy_dmem", help="Copy program to dmem for access through dmem bus", type=bool
+        "--copy_dmem",
+        help="Copy program to dmem for access through dmem bus",
+        type=bool,
     )
 
     args = parser.parse_args()
@@ -177,8 +179,15 @@ def main() -> None:
         if args.copy_dmem:
             fi_runtime.upload_dmem(load_bin_file(args.program))
         print(fi_runtime.send_command("reference_run\n"))
-        print(fi_runtime.send_command(f"dump_dmem 0 {args.result_start + args.result_length}\n"))
+
+        # Output PC ref. and Result ref. for validation
+        print(
+            fi_runtime.send_command(
+                f"dump_dmem {args.result_start} {args.result_length}\n"
+            )
+        )
         print(fi_runtime.send_command("print_pc\n"))
+
         with open(args.outfile, "w") as fi_log:
 
             if args.flip_flops:
@@ -187,7 +196,9 @@ def main() -> None:
                         print(
                             f"Injecting FFs {ff_start} - {ff_end} in cycles {cycle_start} - {cycle_end}"
                         )
-                        command = f"ff_fi_run {ff_start} {ff_end} {cycle_start} {cycle_end}"
+                        command = (
+                            f"ff_fi_run {ff_start} {ff_end} {cycle_start} {cycle_end}"
+                        )
                         fi_log.write(f"# {command}\n")
                         fi_log.write(fi_runtime.send_command(f"{command}\n") + "\n")
 
@@ -197,9 +208,7 @@ def main() -> None:
                         print(
                             f"Injecting IMEM bit {imem_start} - {imem_end} in cycles {cycle_start} - {cycle_end}"
                         )
-                        command = (
-                            f"imem_fi_run {imem_start} {imem_end} {cycle_start} {cycle_end}"
-                        )
+                        command = f"imem_fi_run {imem_start} {imem_end} {cycle_start} {cycle_end}"
                         fi_log.write(f"# {command}\n")
                         fi_log.write(fi_runtime.send_command(f"{command}\n") + "\n")
 
@@ -209,13 +218,9 @@ def main() -> None:
                         print(
                             f"Injecting DMEM bit {dmem_start} - {dmem_end} in cycles {cycle_start} - {cycle_end}"
                         )
-                        command = (
-                            f"dmem_fi_run {dmem_start} {dmem_end} {cycle_start} {cycle_end}"
-                        )
+                        command = f"dmem_fi_run {dmem_start} {dmem_end} {cycle_start} {cycle_end}"
                         fi_log.write(f"# {command}\n")
                         fi_log.write(fi_runtime.send_command(f"{command}\n") + "\n")
-
-
 
 
 if __name__ == "__main__":

@@ -8,4 +8,4 @@ open_run impl_1
 
 report_timing_summary -file $env(REPORT_DIR)/timing_summary.rpt
 
-write_bitstream $env(BITSTREAM_DEST)
+write_bitstream -force $env(BITSTREAM_DEST)

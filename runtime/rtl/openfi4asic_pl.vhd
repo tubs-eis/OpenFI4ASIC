@@ -443,26 +443,29 @@ begin
     -- Instrumented EIS-V instantiation
     eisv_core_wrapper_flt_inst: entity fault_injection.eisv_core_wrapper_flt
         port map (
-            clk_i              => main_clk,
-            rst_ni             => core_reset_ni,
-            imem_addr_o        => core_imem_addr,
-            imem_ren_o         => core_imem_ren,
-            imem_rdata_i       => core_imem_rdata,
-            imem_ready_i       => '1',
-            imem_valid_i       => '1',
-            imem_complete_o    => open,
-            dmem_addr_o        => core_dmem_addr,
-            dmem_ren_o         => core_dmem_ren,
-            dmem_rdata_i       => core_dmem_rdata,
-            dmem_wen_o         => core_dmem_wen,
-            dmem_wdata_o       => dmem_dinb,
-            dmem_byte_enable_o => core_dmem_byte_enable,
-            dmem_valid_i       => '1',
-            dmem_complete_o    => open,
+            clk_i                        => main_clk,
+            rst_ni                       => core_reset_ni,
+            imem_addr_o                  => core_imem_addr,
+            imem_ren_o                   => core_imem_ren,
+            imem_rdata_i                 => core_imem_rdata,
+            imem_ready_i                 => '1',
+            imem_valid_i                 => core_imem_ren,
+            imem_complete_o              => open,
+            dmem_addr_o                  => core_dmem_addr,
+            dmem_ren_o                   => core_dmem_ren,
+            dmem_rdata_i                 => core_dmem_rdata,
+            dmem_wen_o                   => core_dmem_wen,
+            dmem_wdata_o                 => dmem_dinb,
+            dmem_byte_enable_o           => core_dmem_byte_enable,
+            dmem_ready_i                 => '1',
+            dmem_valid_i                 => '1',
+            dmem_complete_o              => open,
+            external_interrupt_pending_i => '0',
+            timer_interrupt_pending_i    => '0',
 
-            clk_scan           => scan_chain_clk,
-            scan_in            => core_scan_in,
-            scan_out           => open
+            clk_scan                     => scan_chain_clk,
+            scan_in                      => core_scan_in,
+            scan_out                     => open
         );
 
     -- Assign signals

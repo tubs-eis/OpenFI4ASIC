@@ -54,7 +54,7 @@ create_bd_design "design_1"
 
 create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7:5.5 processing_system7_0
 apply_bd_automation -rule xilinx.com:bd_rule:processing_system7 -config {make_external "FIXED_IO, DDR" apply_board_preset "1" Master "Disable" Slave "Disable" }  [get_bd_cells processing_system7_0]
-set_property CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {50} [get_bd_cells processing_system7_0]
+set_property CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {25} [get_bd_cells processing_system7_0]
 
 create_bd_cell -type ip -vlnv xilinx.com:ip:axi_bram_ctrl:4.1 axi_bram_ctrl_0
 set_property CONFIG.SINGLE_PORT_BRAM {1} [get_bd_cells axi_bram_ctrl_0]
@@ -66,7 +66,7 @@ create_bd_cell -type module -reference openfi4asic_pl openfi4asic_pl_0
 
 set_property CONFIG.ASYNC_IMEM $imem_async [get_bd_cells openfi4asic_pl_0]
 set_property CONFIG.ASYNC_DMEM $dmem_async [get_bd_cells openfi4asic_pl_0]
-set_property CONFIG.MEM_ADDR_WORDS_LOG2 {9} [get_bd_cells openfi4asic_pl_0]
+set_property CONFIG.MEM_ADDR_WORDS_LOG2 {11} [get_bd_cells openfi4asic_pl_0]
 
 connect_bd_intf_net [get_bd_intf_pins axi_bram_ctrl_0/BRAM_PORTA] [get_bd_intf_pins openfi4asic_pl_0/IMEM_PORTA]
 connect_bd_intf_net [get_bd_intf_pins axi_bram_ctrl_1/BRAM_PORTA] [get_bd_intf_pins openfi4asic_pl_0/DMEM_PORTA]

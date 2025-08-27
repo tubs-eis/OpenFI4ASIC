@@ -1,4 +1,9 @@
 # Check args
+if { ![info exists ::env(EISV_CONFIG)] } {
+    puts "ERROR: EISV_CONFIG is not set"
+    exit 1
+}
+
 if { ![info exists ::env(EISV_FLT_NETLIST)] } {
     puts "ERROR: EISV_FLT_NETLIST has to be set to the instrumented eisv netlist location."
     exit 1
@@ -7,6 +12,13 @@ if { ![info exists ::env(EISV_FLT_NETLIST)] } {
 if { ![info exists ::env(EISV_INFO_FILE)] } {
     puts "ERROR: EISV_INFO_FILE has to be set to eisv_info file location."
     exit 1
+}
+
+if { ![info exists ::env(EISV_FREQ_MHZ)] } {
+    puts "WARNING: EISV_FREQ_MHZ not specified. Using a default value of 25 MHz."
+    set EISV_FREQ_MHZ 25
+} else {
+    set EISV_FREQ_MHZ $env(EISV_FREQ_MHZ)
 }
 
 set fh [open $env(EISV_INFO_FILE) r]
@@ -20,7 +32,7 @@ while {[gets $fh line] >= 0} {
 }
 close $fh
 
-create_project OpenFI4ASICSystem vivado/OpenFI4ASICSystem -part xc7z020clg484-1
+create_project OpenFI4ASICSystem "vivado/OpenFI4ASICSystem_$env(EISV_CONFIG)" -part xc7z020clg484-1
 set_property board_part digilentinc.com:zedboard:part0:1.1 [current_project]
 
 # Import files
@@ -54,7 +66,7 @@ create_bd_design "design_1"
 
 create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7:5.5 processing_system7_0
 apply_bd_automation -rule xilinx.com:bd_rule:processing_system7 -config {make_external "FIXED_IO, DDR" apply_board_preset "1" Master "Disable" Slave "Disable" }  [get_bd_cells processing_system7_0]
-set_property CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {25} [get_bd_cells processing_system7_0]
+set_property CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ $EISV_FREQ_MHZ [get_bd_cells processing_system7_0]
 
 create_bd_cell -type ip -vlnv xilinx.com:ip:axi_bram_ctrl:4.1 axi_bram_ctrl_0
 set_property CONFIG.SINGLE_PORT_BRAM {1} [get_bd_cells axi_bram_ctrl_0]

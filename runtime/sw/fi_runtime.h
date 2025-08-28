@@ -103,6 +103,9 @@ static inline void fi_runtime_set_uploaded_dmem(fi_runtime_t* fi_runtime, uint32
     memory_copy_from(&fi_runtime->dmem, fi_runtime->dmem_uploaded, 0, fi_runtime->dmem.size);
 }
 
+static inline void fi_runtime_clear_dmem(fi_runtime_t* fi_runtime) {
+    memset(fi_runtime->dmem_uploaded, 0, fi_runtime->dmem.size * 4);
+}
 
 static inline void fi_runtime_set_total_cycles(fi_runtime_t* fi_runtime, uint32_t total_cycles) {
     fi_runtime->total_cycles = total_cycles;

@@ -165,6 +165,10 @@ void fi_shell_upload_dmem(fi_shell_t* fi_shell) {
     fi_runtime_set_uploaded_dmem(fi_shell->fi_runtime, (uint32_t*) dmem);
 }
 
+void fi_shell_clear_dmem(fi_shell_t* fi_shell) {
+    fi_runtime_clear_dmem(fi_shell->fi_runtime);
+}
+
 void fi_shell_set_total_cycles(fi_shell_t* fi_shell) {
     char* arg_str;
 
@@ -329,6 +333,7 @@ fi_shell_command_t COMMANDS[] = {
     { .command_str = "help", .command_function = &fi_shell_help },
     { .command_str = "upload_program", .command_function = &fi_shell_upload_program },
     { .command_str = "upload_dmem", .command_function = &fi_shell_upload_dmem },
+    { .command_str = "clear_dmem", .command_function = &fi_shell_clear_dmem },
     { .command_str = "dump_dmem", .command_function = &fi_shell_dump_dmem },
     { .command_str = "dump_imem", .command_function = &fi_shell_dump_imem },
     { .command_str = "print_pc", .command_function = &fi_shell_print_pc },

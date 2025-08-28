@@ -85,7 +85,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--copy_dmem",
         help="Copy program to dmem for access through dmem bus",
-        type=bool,
+        action="store_true",
     )
 
     args = parser.parse_args()
@@ -179,6 +179,9 @@ def main() -> None:
         )
         if args.copy_dmem:
             fi_runtime.upload_dmem(load_bin_file(args.program))
+        else:
+            # Clear dmem in case it is still set
+            fi_runtime.send_command("clear_dmem\n")
         print(fi_runtime.send_command("reference_run\n"))
 
         # Output PC ref. and Result ref. for validation

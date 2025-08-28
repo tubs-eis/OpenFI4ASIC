@@ -26,7 +26,7 @@
 
 #define SC_DEPTH 1706
 
-#define RAM_SIZE 4096
+#define RAM_SIZE_WORDS 2048
 #define RESULT_ADDR 48
 #define TOTAL_CYCLES 510
 #define FIB_INPUT 0x05
@@ -47,12 +47,12 @@ reset_phys_t* reset_device = (reset_phys_t*) RESET_ADDR;
 
 memory_t imem = {
     .base_addr = (uint32_t volatile*) ROM_ADDR,
-    .size = RAM_SIZE / 4
+    .size = RAM_SIZE_WORDS
 };
 
 memory_t dmem = {
     .base_addr = (uint32_t volatile*) RAM_ADDR,
-    .size = RAM_SIZE / 4
+    .size = RAM_SIZE_WORDS
 };
 
 struct Clk* scanChainClock = (struct Clk*) SC_CLK_ADDR;

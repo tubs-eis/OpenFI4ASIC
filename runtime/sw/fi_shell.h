@@ -141,7 +141,7 @@ void fi_shell_upload_dmem(fi_shell_t* fi_shell) {
     }
 
     int upload_size = atoi(dmem_size_str);
-    uint8_t* dmem = (uint8_t*) calloc(fi_shell->fi_runtime->dmem.size, 1);
+    uint8_t* dmem = (uint8_t*) calloc(fi_shell->fi_runtime->dmem.size, 4);
 
     char hex_buf[3];
     hex_buf[2] = '\0';

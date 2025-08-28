@@ -68,8 +68,8 @@ static inline void fi_runtime_new(fi_runtime_t* fi_runtime, memory_t imem, memor
     fi_runtime->dmem = dmem;
 
     fi_runtime->pc_reference = 0;
-    fi_runtime->dmem_reference = malloc(fi_runtime->dmem.size);
-    fi_runtime->dmem_uploaded = calloc(fi_runtime->dmem.size, 1);
+    fi_runtime->dmem_reference = malloc(fi_runtime->dmem.size * 4);
+    fi_runtime->dmem_uploaded = calloc(fi_runtime->dmem.size, 4);
 
     fi_runtime->result_addr = 0;
     fi_runtime->result_length = 1;
@@ -94,7 +94,7 @@ static inline void fi_runtime_set_program(fi_runtime_t* fi_runtime, uint32_t* pr
     fi_runtime->program = program;
     fi_runtime->program_size = size;
 
-    memory_fill(&fi_runtime->imem, 0, 0, fi_runtime->imem.size / 4);
+    memory_fill(&fi_runtime->imem, 0, 0, fi_runtime->imem.size);
     memory_copy_from(&fi_runtime->imem, fi_runtime->program, 0, fi_runtime->program_size);
 }
 
@@ -125,11 +125,10 @@ static inline void fi_runtime_reset(fi_runtime_t* fi_runtime) {
     reset_write(fi_runtime->reset, RESET_ACTIVE);
     clk_gate_run_for_n_cycles_blocking(fi_runtime->main_clk_gate, 3); // For some reason we need three cycles here?
     reset_write(fi_runtime->reset, RESET_ACTIVE);
-    memory_copy_from(&fi_runtime->dmem, fi_runtime->dmem_uploaded, 0, fi_runtime->dmem.size / 4);
-
+    memory_copy_from(&fi_runtime->dmem, fi_runtime->dmem_uploaded, 0, fi_runtime->dmem.size);
 
     if (fi_runtime->imem_dirty) {
-        memory_fill(&fi_runtime->imem, 0, 0, RAM_SIZE / 4);
+        memory_fill(&fi_runtime->imem, 0, 0, fi_runtime->imem.size);
         memory_copy_from(&fi_runtime->imem, fi_runtime->program, 0, fi_runtime->program_size);
         fi_runtime->imem_dirty = false;
     }
@@ -141,7 +140,7 @@ static inline void fi_runtime_reference_run(fi_runtime_t* fi_runtime) {
     fi_runtime_reset(fi_runtime);
     clk_gate_run_for_n_cycles_blocking(fi_runtime->main_clk_gate, fi_runtime->total_cycles);
 
-    memory_copy_to(&fi_runtime->dmem, fi_runtime->dmem_reference, 0, fi_runtime->dmem.size / 4);
+    memory_copy_to(&fi_runtime->dmem, fi_runtime->dmem_reference, 0, fi_runtime->dmem.size);
     fi_runtime->pc_reference = pc_monitor_read_pc(fi_runtime->pc_monitor);
 }
 

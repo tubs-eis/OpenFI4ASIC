@@ -185,6 +185,14 @@ architecture rtl of openfi4asic_pl is
     signal imem_enb   : std_ulogic;
     signal imem_web   : std_ulogic_vector(3 downto 0);
 
+    signal dmem_reset_addra : std_ulogic_vector(MEM_ADDR_WORDS_LOG2 - 1 downto 0);
+    signal dmem_reset_clka  : std_ulogic;
+    signal dmem_reset_rsta  : std_ulogic;
+    signal dmem_reset_dina  : std_ulogic_vector(31 downto 0);
+    signal dmem_reset_douta : std_ulogic_vector(31 downto 0);
+    signal dmem_reset_ena   : std_ulogic;
+    signal dmem_reset_wea   : std_ulogic_vector(3 downto 0);
+
     signal dmem_addra : std_ulogic_vector(MEM_ADDR_WORDS_LOG2 - 1 downto 0);
     signal dmem_clka  : std_ulogic;
     signal dmem_rsta  : std_ulogic;
@@ -307,6 +315,31 @@ begin
             doutb => imem_doutb,
             enb   => imem_enb,
             web   => imem_web
+        );
+
+    dmem_reset_inst: entity fault_injection.dmem_reset
+        generic map (
+            ADDR_WIDTH => MEM_ADDR_WORDS_LOG2,
+            DATA_BYTES => 4
+        )
+        port map (
+            -- AXI Bus ports
+            addr_i => dmem_reset_addra,
+            clk_i  => dmem_reset_clka,
+            rst_i  => dmem_reset_rsta,
+            din_i  => dmem_reset_dina,
+            dout_o => dmem_reset_douta,
+            en_i   => dmem_reset_ena,
+            we_i   => dmem_reset_wea,
+
+            -- DMEM ports
+            addr_o => dmem_addra,
+            clk_o  => dmem_clka,
+            rst_o  => dmem_rsta,
+            din_o  => dmem_dina,
+            dout_i => dmem_douta,
+            en_o   => dmem_ena,
+            we_o   => dmem_wea
         );
 
     dmem_inst: entity fault_injection.dual_clock_bram
@@ -483,14 +516,14 @@ begin
     imem_rstb   <= '0';
     imem_dinb   <= (others => '0');
 
-    dmem_addra <= dmem_bram_addr_a(dmem_addra'high + 2 downto dmem_addra'low + 2);
-    dmem_clka  <= dmem_bram_clk_a;
-    dmem_rsta  <= dmem_bram_rst_a;
-    dmem_dina  <= dmem_bram_wrdata_a;
-    dmem_ena   <= dmem_bram_en_a;
-    dmem_wea   <= dmem_bram_we_a;
+    dmem_reset_addra <= dmem_bram_addr_a(dmem_reset_addra'high + 2 downto dmem_reset_addra'low + 2);
+    dmem_reset_clka  <= dmem_bram_clk_a;
+    dmem_reset_rsta  <= dmem_bram_rst_a;
+    dmem_reset_dina  <= dmem_bram_wrdata_a;
+    dmem_reset_ena   <= dmem_bram_en_a;
+    dmem_reset_wea   <= dmem_bram_we_a;
 
-    dmem_bram_rddata_a <= dmem_douta;
+    dmem_bram_rddata_a <= dmem_reset_douta;
 
     dmem_addrb <= core_dmem_addr(dmem_addrb'high + 2 downto dmem_addrb'low + 2);
     dmem_clkb  <= main_clk;

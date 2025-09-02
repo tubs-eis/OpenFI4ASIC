@@ -11,6 +11,10 @@ entity openfi4asic_pl is
         ASYNC_DMEM : boolean := false
     );
     port (
+        -- Clocks
+        main_clk_i                  : in std_ulogic;
+        scan_chain_clk_i            : in std_ulogic;
+
         -- Main clock gate AXI
         main_clk_gate_S_AXI_ACLK    : in std_ulogic;
         main_clk_gate_S_AXI_ARESETN : in std_ulogic;
@@ -210,8 +214,8 @@ architecture rtl of openfi4asic_pl is
     signal dmem_web   : std_ulogic_vector(3 downto 0);
 
     -- Other signals
-    signal scan_chain_clk : std_ulogic;
-    signal main_clk       : std_ulogic;
+    signal scan_chain_clk_gated : std_ulogic;
+    signal main_clk_gated       : std_ulogic;
 
     signal core_reset_ni : std_ulogic;
 
@@ -239,7 +243,8 @@ begin
     -- Instantiate components
     main_clk_gate_inst: entity fault_injection.clk_gate_top
         port map (
-            clk_o         => main_clk,
+            clk_i         => main_clk_i,
+            clk_o         => main_clk_gated,
             clk_enabled_o => main_clk_enabled,
 
             S_AXI_ACLK    => main_clk_gate_S_AXI_ACLK,
@@ -267,7 +272,8 @@ begin
 
     scan_clk_gate_inst: entity fault_injection.clk_gate_top
         port map (
-            clk_o         => scan_chain_clk,
+            clk_i         => scan_chain_clk_i,
+            clk_o         => scan_chain_clk_gated,
             clk_enabled_o => open,
 
             S_AXI_ACLK    => scan_clk_gate_S_AXI_ACLK,
@@ -371,7 +377,7 @@ begin
             SCN_CHN_WIDTH => 1
         )
         port map (
-            scn_chn_clk_i => scan_chain_clk,
+            scn_chn_clk_i => scan_chain_clk_gated,
 
             scan_chain_o  => core_scan_in,
             done_ff_dbg   => open,
@@ -402,7 +408,7 @@ begin
 
     reset_inst: entity fault_injection.reset_top
         port map (
-            main_clk      => main_clk,
+            main_clk      => main_clk_gated,
             rst_o         => core_reset_ni,
             active_ff_dbg => open,
             done_ff_dbg   => open,
@@ -476,7 +482,7 @@ begin
     -- Instrumented EIS-V instantiation
     eisv_core_wrapper_flt_inst: entity fault_injection.eisv_core_wrapper_flt
         port map (
-            clk_i                        => main_clk,
+            clk_i                        => main_clk_gated,
             rst_ni                       => core_reset_ni,
             imem_addr_o                  => core_imem_addr,
             imem_ren_o                   => core_imem_ren,
@@ -496,7 +502,7 @@ begin
             external_interrupt_pending_i => '0',
             timer_interrupt_pending_i    => '0',
 
-            clk_scan                     => scan_chain_clk,
+            clk_scan                     => scan_chain_clk_gated,
             scan_in                      => core_scan_in,
             scan_out                     => open
         );
@@ -512,7 +518,7 @@ begin
     imem_bram_rddata_a <= imem_douta;
 
     imem_addrb <= core_imem_addr(imem_addrb'high + 2 downto imem_addrb'low + 2);
-    imem_clkb  <= main_clk;
+    imem_clkb  <= main_clk_gated;
     imem_rstb   <= '0';
     imem_dinb   <= (others => '0');
 
@@ -526,13 +532,13 @@ begin
     dmem_bram_rddata_a <= dmem_reset_douta;
 
     dmem_addrb <= core_dmem_addr(dmem_addrb'high + 2 downto dmem_addrb'low + 2);
-    dmem_clkb  <= main_clk;
+    dmem_clkb  <= main_clk_gated;
     dmem_rstb  <= '0';
 
     -- OOB dection
-    address_seq: process (main_clk) is
+    address_seq: process (main_clk_gated) is
     begin
-        if rising_edge(main_clk) then
+        if rising_edge(main_clk_gated) then
             core_imem_addr_reg <= core_imem_addr;
             core_dmem_addr_reg <= core_dmem_addr;
         end if;

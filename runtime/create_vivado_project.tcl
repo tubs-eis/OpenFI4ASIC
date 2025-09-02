@@ -14,11 +14,18 @@ if { ![info exists ::env(EISV_INFO_FILE)] } {
     exit 1
 }
 
-if { ![info exists ::env(EISV_FREQ_MHZ)] } {
-    puts "WARNING: EISV_FREQ_MHZ not specified. Using a default value of 25 MHz."
-    set EISV_FREQ_MHZ 25
+if { ![info exists ::env(EISV_MAIN_CLK_CLKDIV_REL)] } {
+    puts "WARNING: EISV_MAIN_CLK_CLKDIV_REL not specified. Using a default value of 8 -> 25 MHz."
+    set EISV_MAIN_CLK_CLKDIV_REL 8
 } else {
-    set EISV_FREQ_MHZ $env(EISV_FREQ_MHZ)
+    set EISV_MAIN_CLK_CLKDIV_REL $env(EISV_MAIN_CLK_CLKDIV_REL)
+}
+
+if { ![info exists ::env(EISV_SCAN_CLK_CLKDIV)] } {
+    puts "WARNING: EISV_SCAN_CLK_CLKDIV not specified. Using a default value of 4 -> 200 MHz."
+    set EISV_SCAN_CLK_CLKDIV 4
+} else {
+    set EISV_SCAN_CLK_CLKDIV $env(EISV_SCAN_CLK_CLKDIV)
 }
 
 set fh [open $env(EISV_INFO_FILE) r]
@@ -41,6 +48,7 @@ add_files [glob rtl/*.vhd]
 set_property file_type {VHDL 2008} [get_files {*/rtl/*.vhd}]
 set_property library fault_injection [get_files {*/rtl/*.vhd}]
 set_property file_type {VHDL} [get_files {*/rtl/openfi4asic_pl.vhd}]
+set_property file_type {VHDL} [get_files {*/rtl/clock_gen.vhd}]
 
 set_property PATH_MODE {RelativeOnly} [get_files {*/rtl/*.vhd}]
 
@@ -66,7 +74,11 @@ create_bd_design "design_1"
 
 create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7:5.5 processing_system7_0
 apply_bd_automation -rule xilinx.com:bd_rule:processing_system7 -config {make_external "FIXED_IO, DDR" apply_board_preset "1" Master "Disable" Slave "Disable" }  [get_bd_cells processing_system7_0]
-set_property CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ $EISV_FREQ_MHZ [get_bd_cells processing_system7_0]
+set_property CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {100.0} [get_bd_cells processing_system7_0]
+
+create_bd_cell -type module -reference clock_gen clock_gen_0
+set_property CONFIG.SCAN_CHAIN_CLKDIV $EISV_SCAN_CLK_CLKDIV     [get_bd_cells clock_gen_0]
+set_property CONFIG.MAIN_CLKDIV_REL   $EISV_MAIN_CLK_CLKDIV_REL [get_bd_cells clock_gen_0]
 
 create_bd_cell -type ip -vlnv xilinx.com:ip:axi_bram_ctrl:4.1 axi_bram_ctrl_0
 set_property CONFIG.SINGLE_PORT_BRAM {1} [get_bd_cells axi_bram_ctrl_0]
@@ -90,6 +102,13 @@ apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config { Clk_master {Auto} Cl
 apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config { Clk_master {Auto} Clk_slave {Auto} Clk_xbar {Auto} Master {/processing_system7_0/M_AXI_GP0} Slave {/openfi4asic_pl_0/scan_chain_S_AXI} ddr_seg {Auto} intc_ip {New AXI SmartConnect} master_apm {0}} [get_bd_intf_pins openfi4asic_pl_0/scan_chain_S_AXI]
 apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config { Clk_master {Auto} Clk_slave {Auto} Clk_xbar {Auto} Master {/processing_system7_0/M_AXI_GP0} Slave {/openfi4asic_pl_0/r3s3t_S_AXI} ddr_seg {Auto} intc_ip {New AXI SmartConnect} master_apm {0}} [get_bd_intf_pins openfi4asic_pl_0/r3s3t_S_AXI]
 apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config { Clk_master {Auto} Clk_slave {Auto} Clk_xbar {Auto} Master {/processing_system7_0/M_AXI_GP0} Slave {/openfi4asic_pl_0/pc_monitor_S_AXI} ddr_seg {Auto} intc_ip {New AXI SmartConnect} master_apm {0}} [get_bd_intf_pins openfi4asic_pl_0/pc_monitor_S_AXI]
+
+# Connect clocks
+disconnect_bd_net /processing_system7_0_FCLK_CLK0 [get_bd_pins processing_system7_0/FCLK_CLK0]
+connect_bd_net [get_bd_pins processing_system7_0/FCLK_CLK0] [get_bd_pins clock_gen_0/clk_i]
+connect_bd_net [get_bd_pins clock_gen_0/main_clk_o] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK]
+connect_bd_net [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins openfi4asic_pl_0/main_clk_i]
+connect_bd_net [get_bd_pins clock_gen_0/scan_chain_clk_o] [get_bd_pins openfi4asic_pl_0/scan_chain_clk_i]
 
 delete_bd_objs [get_bd_addr_segs] [get_bd_addr_segs -excluded]
 

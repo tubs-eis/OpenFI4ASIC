@@ -1,4 +1,5 @@
 import argparse
+import time
 from typing import Self, Optional, Type
 from types import TracebackType
 import serial
@@ -206,7 +207,14 @@ def main() -> None:
                             f"ff_fi_run {ff_start} {ff_end} {cycle_start} {cycle_end}"
                         )
                         fi_log.write(f"# {command}\n")
+                        timestamp_start = time.time_ns()
                         fi_log.write(fi_runtime.send_command(f"{command}\n") + "\n")
+                        timestamp_end = time.time_ns()
+                        time_taken_ms = (timestamp_end - timestamp_start) // 1_000_000
+                        total_fis = (cycle_end - cycle_start) * (ff_end - ff_start)
+                        print(
+                            f"Took {time_taken_ms / 1000:.02f} s to run {total_fis} FIs at a rate of {(total_fis / time_taken_ms) * 1000:.02f} FIs/s"
+                        )
 
             if args.imem_bits:
                 for imem_start, imem_end in args.imem_bits:

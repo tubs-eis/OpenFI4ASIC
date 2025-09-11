@@ -1,6 +1,7 @@
 #ifndef FI_RUNTIME_H
 #define FI_RUNTIME_H
 
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "devices/memory.h"
@@ -99,11 +100,27 @@ static inline void fi_runtime_set_program(fi_runtime_t* fi_runtime, uint32_t* pr
 }
 
 static inline void fi_runtime_set_uploaded_dmem(fi_runtime_t* fi_runtime, uint32_t* dmem) {
-    fi_runtime->dmem_uploaded = dmem;
+    // 1. Write dmem
+    memory_copy_from(&fi_runtime->dmem, dmem, 0, fi_runtime->dmem.size-1);
+
+    // 2. Trigger COPY operation
+    memory_write(&fi_runtime->dmem, fi_runtime->dmem.size-1, 1);
+
+    // 3. Wait until complete
+    while (memory_read(&fi_runtime->dmem, fi_runtime->dmem.size - 1) != 0) {
+    }
 }
 
 static inline void fi_runtime_clear_dmem(fi_runtime_t* fi_runtime) {
-    fi_runtime->dmem_uploaded = NULL;
+    // 1. Write dmem
+    memory_fill(&fi_runtime->dmem, 0, 0, fi_runtime->dmem.size-1);
+
+    // 2. Trigger COPY operation
+    memory_write(&fi_runtime->dmem, fi_runtime->dmem.size-1, 1);
+
+    // 3. Wait until complete
+    while (memory_read(&fi_runtime->dmem, fi_runtime->dmem.size - 1) != 0) {
+    }
 }
 
 static inline void fi_runtime_set_total_cycles(fi_runtime_t* fi_runtime, uint32_t total_cycles) {
@@ -125,17 +142,14 @@ static inline void fi_runtime_set_done_addr(fi_runtime_t* fi_runtime, uint32_t d
 
 static inline void fi_runtime_reset(fi_runtime_t* fi_runtime) {
     // Trigger DMEM reset logic
-    if (fi_runtime->dmem_uploaded == NULL) {
-        memory_write(&fi_runtime->dmem, fi_runtime->dmem.size - 1, 1);
-        while (memory_read(&fi_runtime->dmem, fi_runtime->dmem.size - 1) != 0) {
-        }
-    }
+    memory_write(&fi_runtime->dmem, fi_runtime->dmem.size - 1, 0);
 
     reset_write(fi_runtime->reset, RESET_ACTIVE);
     clk_gate_run_for_n_cycles_blocking(fi_runtime->main_clk_gate, 3); // For some reason we need three cycles here?
     reset_write(fi_runtime->reset, RESET_ACTIVE);
-    if (fi_runtime->dmem_uploaded != NULL) {
-        memory_copy_from(&fi_runtime->dmem, fi_runtime->dmem_uploaded, 0, fi_runtime->dmem.size-1);
+
+    // Wait until DMEM reset is done
+    while (memory_read(&fi_runtime->dmem, fi_runtime->dmem.size - 1) != 0) {
     }
 
     if (fi_runtime->imem_dirty) {

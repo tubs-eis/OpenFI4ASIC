@@ -62,12 +62,7 @@ An example C program, which injects a fault into each flip-flop of the design in
 
 ## Contributors
 
-- Jasper Homann (Technische Universität Braunschweig, [Chair for Chip Design for Embedded Computing](https://www.tu-braunschweig.de/eis))
-- Eike Trumann (Technische Universität Braunschweig, [Chair for Chip Design for Embedded Computing](https://www.tu-braunschweig.de/eis))
-- Lucian Lohse (Technische Universität Braunschweig, [Chair for Chip Design for Embedded Computing](https://www.tu-braunschweig.de/eis))
-- Moritz Weißbrich (Technische Universität Braunschweig, [Chair for Chip Design for Embedded Computing](https://www.tu-braunschweig.de/eis))
-- Christian Ewert (During his master thesis at Leibniz Universität Hannover, [Institut für Mikroelektronische Systeme](https://www.ims.uni-hannover.de/de/))
-- Guillermo Payá Vayá ((Technische Universität Braunschweig, Head of [Chair for Chip Design for Embedded Computing](https://www.tu-braunschweig.de/eis)))
+XXXX
 
 ## License
 
@@ -75,9 +70,4 @@ This open-source project is distributed under the MIT license.
 
 ## Citation
 
-> [1] R. Nowosielski, L. Gerlach, S. Bieband, G. Paya-Vaya, and H. Blume,
-> “FLINT: Layout-oriented FPGA-based methodology for fault tolerant ASIC design,”
-> Proceedings - Design, Automation and Test in Europe, DATE, vol. 2015-April, pp. 297–300, Apr. 2015, doi: 10.7873/DATE.2015.0278.
-
-A paper featuring with the new features is in progress.
-In the meantime please cite this repository and the above paper.
+XXXX

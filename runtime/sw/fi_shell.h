@@ -14,6 +14,15 @@ typedef struct {
     size_t parse_index;
 } fi_shell_t;
 
+typedef struct {
+    char const* command_str;
+    char const* help_str;
+    void (*command_function) (fi_shell_t*);
+} fi_shell_command_t;
+
+fi_shell_command_t COMMANDS[];
+int COMMAND_COUNT;
+
 void fi_shell_new(fi_shell_t* fi_shell, fi_runtime_t* fi_runtime) {
     // Disable buffering on stdin/stdout
     setvbuf(stdin, NULL, _IONBF, 0);
@@ -98,7 +107,12 @@ bool fi_shell_next_arg(fi_shell_t* fi_shell, char** arg) {
 }
 
 void fi_shell_help() {
-    printf("TODO: Print help text!\n");
+
+    printf("OpenFI4ASIC Fault Injection Shell\n");
+    printf("Command List:\n");
+    for (int i = 0; i < COMMAND_COUNT; i++) {
+        printf("    %s\n", COMMANDS[i].help_str);
+    }
 }
 
 void fi_shell_upload_program(fi_shell_t* fi_shell) {
@@ -323,29 +337,25 @@ void fi_shell_dmem_fi_run(fi_shell_t* fi_shell) {
     fi_shell_mem_fi_run(fi_shell, &fi_shell->fi_runtime->dmem);
 }
 
-typedef struct {
-    char const* command_str;
-    void (*command_function) (fi_shell_t*);
-
-} fi_shell_command_t;
-
 fi_shell_command_t COMMANDS[] = {
-    { .command_str = "help", .command_function = &fi_shell_help },
-    { .command_str = "upload_program", .command_function = &fi_shell_upload_program },
-    { .command_str = "upload_dmem", .command_function = &fi_shell_upload_dmem },
-    { .command_str = "clear_dmem", .command_function = &fi_shell_clear_dmem },
-    { .command_str = "dump_dmem", .command_function = &fi_shell_dump_dmem },
-    { .command_str = "dump_imem", .command_function = &fi_shell_dump_imem },
-    { .command_str = "print_pc", .command_function = &fi_shell_print_pc },
-    { .command_str = "set_total_cycles", .command_function = &fi_shell_set_total_cycles },
-    { .command_str = "set_timeout_cycles", .command_function = &fi_shell_set_timeout_cycles },
-    { .command_str = "set_result", .command_function = &fi_shell_set_result },
-    { .command_str = "set_done_addr", .command_function = &fi_shell_set_done_addr },
-    { .command_str = "reference_run", .command_function = &fi_shell_reference_run },
-    { .command_str = "ff_fi_run", .command_function = &fi_shell_ff_fi_run },
-    { .command_str = "imem_fi_run", .command_function = &fi_shell_imem_fi_run },
-    { .command_str = "dmem_fi_run", .command_function = &fi_shell_dmem_fi_run }
+    { .command_str = "help", .help_str = "help | Print this help message", .command_function = &fi_shell_help },
+    { .command_str = "upload_program", .help_str = "upload_program <size>\\n<PROGRAM_HEX> | Upload <size> bytes of program data for imem initialization", .command_function = &fi_shell_upload_program },
+    { .command_str = "upload_dmem", .help_str = "upload_dmem <size>\\n<DMEM_HEX> | Upload <size> bytes of dmem initialization data", .command_function = &fi_shell_upload_dmem },
+    { .command_str = "clear_dmem", .help_str = "clear_dmem | Reset dmem to zeros or previously uploaded dmem init data", .command_function = &fi_shell_clear_dmem },
+    { .command_str = "dump_dmem", .help_str = "dump_dmem [start_addr] [bytes] | Dump [bytes] of dmem data to stdout starting at [start_addr]", .command_function = &fi_shell_dump_dmem },
+    { .command_str = "dump_imem", .help_str = "dump_imem [start_addr] [bytes] | Dump [bytes] of imem data to stdout starting at [start_addr]", .command_function = &fi_shell_dump_imem },
+    { .command_str = "print_pc", .help_str = "print_pc | Print the current PC to stdout", .command_function = &fi_shell_print_pc },
+    { .command_str = "set_total_cycles", .help_str = "set_total_cycles | Set cycle count for program execution", .command_function = &fi_shell_set_total_cycles },
+    { .command_str = "set_timeout_cycles", .help_str = "set_timeout_cycles | Set maximum amount of cycles for FI run execution", .command_function = &fi_shell_set_timeout_cycles },
+    { .command_str = "set_result", .help_str = "set_result <start_addr> <size> | Set the <start_addr> and <size> of the programs result in dmem", .command_function = &fi_shell_set_result },
+    { .command_str = "set_done_addr", .help_str = "set_done_addr <addr> | Set <addr>ess where program writes a non-zero value to indicate termination", .command_function = &fi_shell_set_done_addr },
+    { .command_str = "reference_run", .help_str = "reference_run | Perform a reference run without FI capture the reference result", .command_function = &fi_shell_reference_run },
+    { .command_str = "ff_fi_run", .help_str = "ff_fi_run <start_ff> <end_ff> <start_cycle> <end_cycle> | Perform an FI Campaign on FFs systematically injecting faults from <start_ff> to <end_ff> and <start_cycle> to <end_cycle>", .command_function = &fi_shell_ff_fi_run },
+    { .command_str = "imem_fi_run", .help_str = "imem_fi_run <start_bit> <end_bit> <start_cycle> <end_cycle> | Perform an FI Campaign on imem bits systematically injecting faults from <start_bit> to <end_bit> and <start_cycle> to <end_cycle>", .command_function = &fi_shell_imem_fi_run },
+    { .command_str = "dmem_fi_run", .help_str = "dmem_fi_run <start_bit> <end_bit> <start_cycle> <end_cycle> | Perform an FI Campaign on dmem bits systematically injecting faults from <start_bit> to <end_bit> and <start_cycle> to <end_cycle>", .command_function = &fi_shell_dmem_fi_run }
 };
+
+int COMMAND_COUNT = sizeof(COMMANDS) / sizeof(fi_shell_command_t);
 
 void fi_shell_run(fi_shell_t* fi_shell) {
     printf("Welcome to the OpenFI4ASIC FI shell\n");
@@ -361,7 +371,7 @@ void fi_shell_run(fi_shell_t* fi_shell) {
         }
 
         bool found = false;
-        for (int i = 0; i < sizeof(COMMANDS) / sizeof(fi_shell_command_t); i++) {
+        for (int i = 0; i < COMMAND_COUNT; i++) {
             if (strcmp(command, COMMANDS[i].command_str) == 0) {
                 COMMANDS[i].command_function(fi_shell);
                 found = true;

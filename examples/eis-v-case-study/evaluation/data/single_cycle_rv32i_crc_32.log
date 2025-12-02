@@ -1,0 +1,9 @@
+
+
+
+REFERENCE START
+00000e00: 421ea109
+PC: 00000010
+REFERENCE END
+Injecting FFs 0 - 1024 in cycles 0 - 659
+Took 157.93 s to run 674816 FIs at a rate of 4273.02 FIs/s

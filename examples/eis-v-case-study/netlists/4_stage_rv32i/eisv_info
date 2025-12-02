@@ -1,0 +1,3 @@
+ISA rv32i_zicsr
+IMEM_DELAY 0
+DMEM_DELAY 0

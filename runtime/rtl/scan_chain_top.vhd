@@ -15,6 +15,9 @@ entity scan_chain_top is
         scan_chain_o : out std_ulogic_vector(SCN_CHN_WIDTH - 1 downto 0);
         scn_chn_clk_i : in std_ulogic;
 
+        done_ff_dbg : out std_ulogic;
+        active_ff_dbg : out std_ulogic;
+
         -- AXI Ports
         S_AXI_ACLK    : in  std_ulogic;
         S_AXI_ARESETN : in  std_ulogic;
@@ -102,7 +105,9 @@ begin
         data_i => w_data(SCN_CHN_WIDTH - 1 downto 0),
         w_addr_i => w_addr,
         w_en => w_en,
-        scan_chain_o => scan_chain_o
+        scan_chain_o => scan_chain_o,
+        done_ff_dbg => done_ff_dbg,
+        active_ff_dbg => active_ff_dbg
     );
 
 end architecture;

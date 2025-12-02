@@ -1,0 +1,39 @@
+# Definition of tests to ensure all core produce the same reference
+
+[tests.basicmath_isqrt]
+binary = "programs/bin/basicmath_isqrt.bin"
+copy_dmem = false
+total_cycles = 510
+result_start = 51
+result_length = 1
+pc_reference = 0x10
+reference = [0x7fed0000]
+
+[tests.bubble]
+binary = "programs/bin/bubble.bin"
+copy_dmem = false
+total_cycles = 1000
+result_start = 448
+result_length = 10
+pc_reference = 0x0c
+reference = [
+    0x8195e16b,
+    0x9e3779ba,
+    0xdc7e7fd3,
+    0xed5486e9,
+    0xf4d87954,
+    0x098c28ce,
+    0x0dd4dadf,
+    0x2ad461b5,
+    0x3fe89f62,
+    0x422e9228,
+]
+
+[tests.crc_32]
+binary = "programs/bin/crc_32.bin"
+copy_dmem = true
+total_cycles = 1200
+result_start = 896
+result_length = 1
+pc_reference = 0x10
+reference = [0x421ea109]

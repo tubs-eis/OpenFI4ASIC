@@ -1,0 +1,9 @@
+
+
+
+REFERENCE START
+000000cc: 7fed0000
+PC: 00000010
+REFERENCE END
+Injecting FFs 0 - 1476 in cycles 0 - 507
+Took 137.30 s to run 748332 FIs at a rate of 5450.30 FIs/s

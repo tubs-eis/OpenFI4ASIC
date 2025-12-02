@@ -19,7 +19,7 @@ entity clk_gate is
 end entity;
 
 architecture rtl of clk_gate is
-    signal count_ff, count_nxt  : std_ulogic_vector(63 downto 0);
+    signal count_ff, count_nxt  : std_ulogic_vector(19 downto 0);
     signal counting             : std_ulogic;
     signal enable_clock         : std_ulogic;
 begin
@@ -28,7 +28,7 @@ begin
         if (rising_edge(clk_i)) then
             count_ff <= count_nxt;
             if (set_count_i = '1') then
-                count_ff <= count_i;
+                count_ff <= count_i(count_ff'high downto count_ff'low);
             end if;
         end if;
     end process;

@@ -13,6 +13,8 @@ entity reset_top is
         -- User Ports
         main_clk      : in  std_ulogic;
         rst_o         : out std_ulogic;
+        active_ff_dbg : out std_ulogic;
+        done_ff_dbg   : out std_ulogic;
 
         -- AXI Ports
         S_AXI_ACLK    : in  std_ulogic;
@@ -86,7 +88,9 @@ begin
         main_clk    =>  main_clk,
         w_en        =>  w_en,
         rst_i       =>  data_i(0),
-        rst_o       =>  rst_o
+        rst_o       =>  rst_o,
+        active_ff_dbg => active_ff_dbg,
+        done_ff_dbg => done_ff_dbg
      );
 
 end architecture;

@@ -4,7 +4,7 @@ use ieee.numeric_std.ALL;
 
 entity scan_chain_router is
     generic (
-        SCN_CHN_WIDTH : integer
+        SCN_CHN_WIDTH : integer := 1
     );
     port(
         clk, rst     :  in  std_ulogic;
@@ -12,7 +12,9 @@ entity scan_chain_router is
         data_i       :  in  std_ulogic_vector(SCN_CHN_WIDTH-1 downto 0);
         w_addr_i     :  in  std_ulogic_vector(0 downto 0);
         w_en         :  in  std_ulogic;
-        scan_chain_o :  out std_ulogic_vector(SCN_CHN_WIDTH-1 downto 0)
+        scan_chain_o :  out std_ulogic_vector(SCN_CHN_WIDTH-1 downto 0);
+        done_ff_dbg : out std_ulogic;
+        active_ff_dbg : out std_ulogic
     );
 end entity;
 
@@ -25,6 +27,10 @@ architecture rtl of scan_chain_router is
     signal done_ff, done_nxt : std_ulogic;
 
 begin
+    -- DBG REMOVE
+    done_ff_dbg <= done_ff;
+    active_ff_dbg <= active_ff;
+
     seq : process (clk)
     begin
         if (rising_edge(clk)) then
@@ -38,14 +44,12 @@ begin
         end if;
     end process;
 
-    scn_clk_seq : process (scn_chn_clk)
+    scn_clk_seq : process (rst, scn_chn_clk)
     begin
-        if (rising_edge(scn_chn_clk)) then
-            if (rst = '0') then
-                done_ff <= '0';
-            else 
-                done_ff <= done_nxt;
-            end if;
+        if (rst = '0') then
+            done_ff <= '0';
+        elsif (rising_edge(scn_chn_clk)) then
+            done_ff <= done_nxt;
         end if;
     end process;
     

@@ -11,6 +11,7 @@ entity clk_gate_top is
     );
     port(
         -- User Ports
+        clk_i : in std_ulogic;
         clk_o : out std_ulogic;
         clk_enabled_o : out std_ulogic;
 
@@ -92,7 +93,7 @@ begin
 
     clk_gate_inst: entity fault_injection.clk_gate
      port map(
-        clk_i => S_AXI_ACLK,
+        clk_i => clk_i,
         clk_o => clk_o,
         mode_i => clk_mode,
         count_i => clk_count,

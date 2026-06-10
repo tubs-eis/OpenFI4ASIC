@@ -59,7 +59,7 @@ add_files [glob ../lib/NANGATE/*.vhd]
 set_property PATH_MODE {RelativeOnly} [get_files {*/lib/NANGATE/*.vhd}]
 set_property file_type {VHDL 2008} [get_files {*/lib/NANGATE/*.vhd}]
 
-add_files $env(NANGATE_PATH)/Front_End/Vital/NangateOpenCellLibrary_components.vhd
+add_files $env(NANGATE_PATH)/Front_End/Vital/NangateOpenCellLibrary.vhd
 add_files $env(NANGATE_PATH)/Front_End/Vital/NangateOpenCellLibrary_tables.vhd
 add_files $env(NANGATE_PATH)/Front_End/Vital/NangateOpenCellLibrary_attribute.vhd
 

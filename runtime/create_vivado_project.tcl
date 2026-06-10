@@ -1,3 +1,5 @@
+global env
+
 # Check args
 if { ![info exists ::env(EISV_CONFIG)] } {
     puts "ERROR: EISV_CONFIG is not set"
@@ -57,12 +59,12 @@ add_files [glob ../lib/NANGATE/*.vhd]
 set_property PATH_MODE {RelativeOnly} [get_files {*/lib/NANGATE/*.vhd}]
 set_property file_type {VHDL 2008} [get_files {*/lib/NANGATE/*.vhd}]
 
-add_files /modules_opt/ASIClibs/FreePDK/NanGate_45nm_OCL_v2010_12_OpenFI4ASIC/pdk_v1.3_v2010_12/NangateOpenCellLibrary_PDKv1_3_v2010_12/Front_End/Vital/NangateOpenCellLibrary_components.vhd
-add_files /modules_opt/ASIClibs/FreePDK/NanGate_45nm_OCL_v2010_12_OpenFI4ASIC/pdk_v1.3_v2010_12/NangateOpenCellLibrary_PDKv1_3_v2010_12/Front_End/Vital/NangateOpenCellLibrary_tables.vhd
-add_files /modules_opt/ASIClibs/FreePDK/NanGate_45nm_OCL_v2010_12_OpenFI4ASIC/pdk_v1.3_v2010_12/NangateOpenCellLibrary_PDKv1_3_v2010_12/Front_End/Vital/NangateOpenCellLibrary_attribute.vhd
+add_files $env(NANGATE_PATH)/Front_End/Vital/NangateOpenCellLibrary.vhd
+add_files $env(NANGATE_PATH)/Front_End/Vital/NangateOpenCellLibrary_tables.vhd
+add_files $env(NANGATE_PATH)/Front_End/Vital/NangateOpenCellLibrary_attribute.vhd
 
-set_property PATH_MODE {AbsoluteOnly} [get_files {/modules_opt/ASIClibs/FreePDK/NanGate_45nm_OCL_v2010_12_OpenFI4ASIC/pdk_v1.3_v2010_12/NangateOpenCellLibrary_PDKv1_3_v2010_12/Front_End/Vital/*.vhd}]
-set_property library NangateOpenCellLibrary [get_files {/modules_opt/ASIClibs/FreePDK/NanGate_45nm_OCL_v2010_12_OpenFI4ASIC/pdk_v1.3_v2010_12/NangateOpenCellLibrary_PDKv1_3_v2010_12/Front_End/Vital/*.vhd}]
+set_property PATH_MODE {AbsoluteOnly} [get_files */Front_End/Vital/*.vhd]
+set_property library NangateOpenCellLibrary [get_files */Front_End/Vital/*.vhd]
 
 add_files $env(EISV_FLT_NETLIST)
 

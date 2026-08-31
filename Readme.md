@@ -1,10 +1,10 @@
 # OpenFI4ASIC
 
-A fault instrumentation tool and a corresponding FPGA runtime for performing fast fault injection campaigns on post-synthesis netlists.
+This repository contains a fault instrumentation tool and a corresponding FPGA runtime for performing fast fault injection campaigns on post-synthesis netlists, called OpenFI4ASIC[1].
 
 The standard cells implementing flip-flops are transformed and inserted into a scan-chain, which can be used together with a clock-gating mechanism to inject bit-flips into the design.
 
-This work is based on the methodology and code of OpenFlint[1].
+This work is based on the methodology and code of OpenFlint[2].
 The fault instrumentation is simplified to only cover bit-flips in flip-flops, but can easily be extended to also cover e. g. stuck-at faults.
 
 To speed up fault injection campaigns an FPGA based fault-emulation system specifically designed for emulating fault-injection on processor cores is provided.
@@ -77,9 +77,15 @@ This open-source project is distributed under the MIT license.
 
 ## Citation
 
-> [1] R. Nowosielski, L. Gerlach, S. Bieband, G. Paya-Vaya, and H. Blume,
-> “FLINT: Layout-oriented FPGA-based methodology for fault tolerant ASIC design,”
-> Proceedings - Design, Automation and Test in Europe, DATE, vol. 2015-April, pp. 297–300, Apr. 2015, doi: 10.7873/DATE.2015.0278.
+The OpenFI4ASIC framework is described in the following paper. If you are using OpenFI4ASIC, please cite as follows:
 
-A paper featuring with the new features is in progress.
-In the meantime please cite this repository and the above paper.
+> [1] Homann, J.; Trumann, E.; Durak, U.; Payá-Vayá, G. OpenFI4ASIC:
+> An Open-Source Fault Injection Framework for ASIC Designs via FPGA-Based Rapid Prototyping.
+> In Computer Safety, Reliability, and Security: 45th International Conference, SAFECOMP 2026, Valencia, Spain, September 23–25, 2026,
+> Proceedings; Springer: Cham, 2026; Vol. 16868, pp 3–17. https://doi.org/10.1007/978-3-032-34867-8_1.
+
+The original HW-FI approach was initially presented in the following paper:
+
+> [2] R. Nowosielski, L. Gerlach, S. Bieband, G. Paya-Vaya, and H. Blume,
+> “FLINT: Layout-oriented FPGA-based methodology for fault tolerant ASIC design,”
+> Proceedings - Design, Automation and Test in Europe, DATE, vol. 2015-April, pp. 297–300, Apr. 2015, doi: https://doi.org/10.7873/DATE.2015.0278.
